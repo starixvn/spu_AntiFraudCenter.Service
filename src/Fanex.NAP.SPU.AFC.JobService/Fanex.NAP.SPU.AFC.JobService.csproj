@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CodeAnalysisRuleSet>..\..\.sonarlint\fanex.nap.spu.dcscsharp.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Model\**" />
+    <Content Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\.sonarlint\fanex.nap.spu.dcs\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.System" Version="5.0.1" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
+    <PackageReference Include="Fanex.Data" Version="4.2.2" />
+    <PackageReference Include="Fanex.Data.MySql" Version="4.2.2" />
+    <PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
+    <PackageReference Include="Fanex.Logging.Extensions.Database" Version="1.0.8" />
+    <PackageReference Include="Fanex.NAP.Client.AspNetCore" Version="1.0.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.6" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.6" NoWarn="NU1605" />
+    <PackageReference Include="Sentry.AspNetCore" Version="2.1.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fanex.NAP.SPU.AFC\Fanex.NAP.SPU.AFC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App_Data\DEV\SPNames.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\LOCAL\SPNames.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\PROD\SPNames.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="App_Data\UAT\SPNames.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

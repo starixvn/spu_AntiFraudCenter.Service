@@ -1,0 +1,12 @@
+{
+  "ServerUri": "http://sonarqube.nexdev.net/",
+  "Organization": null,
+  "ProjectKey": "Fanex.NAP.SPU.DCS",
+  "ProjectName": "Fanex.NAP.SPU.DCS",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "cs-sonar-way-80515",
+      "ProfileTimestamp": "2020-11-27T06:18:08Z"
+    }
+  }
+}

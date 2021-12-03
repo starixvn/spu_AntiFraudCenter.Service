@@ -1,0 +1,12 @@
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\bin\Debug\net5.0\Fanex.NAP.SPU.CTS.deps.json
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\bin\Debug\net5.0\Fanex.NAP.SPU.CTS.dll
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\bin\Debug\net5.0\ref\Fanex.NAP.SPU.CTS.dll
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\bin\Debug\net5.0\Fanex.NAP.SPU.CTS.pdb
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.GeneratedMSBuildEditorConfig.editorconfig
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.AssemblyInfoInputs.cache
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.AssemblyInfo.cs
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.csproj.CoreCompileInputs.cache
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.dll
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\ref\Fanex.NAP.SPU.CTS.dll
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.pdb
+D:\GIT\.NetCore SPU.CTS.Service\src\Fanex.NAP.SPU.CTS\obj\Debug\net5.0\Fanex.NAP.SPU.CTS.csproj.AssemblyReference.cache
