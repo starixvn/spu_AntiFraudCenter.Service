@@ -21,3 +21,4 @@ D:\GIT\.NetCore SPU.AntiFraudCenter.Service\src\Fanex.NAP.SPU.AFC\obj\Debug\net5
 D:\GIT\.NetCore SPU.AntiFraudCenter.Service\src\Fanex.NAP.SPU.AFC\obj\Debug\net5.0\Fanex.NAP.SPU.AFC.dll
 D:\GIT\.NetCore SPU.AntiFraudCenter.Service\src\Fanex.NAP.SPU.AFC\obj\Debug\net5.0\ref\Fanex.NAP.SPU.AFC.dll
 D:\GIT\.NetCore SPU.AntiFraudCenter.Service\src\Fanex.NAP.SPU.AFC\obj\Debug\net5.0\Fanex.NAP.SPU.AFC.pdb
+D:\GIT\.NetCore SPU.AntiFraudCenter.Service\src\Fanex.NAP.SPU.AFC\obj\Debug\net5.0\Fanex.NAP.SPU.AFC.csproj.AssemblyReference.cache
