@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <Functions>
-
+	<Function name="AntiFraudCase">
+		<Setting Key="API_CustomerExtraInfo_Get" SpName="API_CustomerExtraInfo_Get" DbName="MySQL.LicenseDB.Siebog" />
+		<Setting Key="AFC_Get_B2CCustId" SpName="AFC_Get_B2CCustId_xtest" DbName="DBAGE.bodb02.bodbAdminNet" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" SpName="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" DbName="MySQL.CTS_DataCenter.ctsService" />
+	</Function>
 </Functions>

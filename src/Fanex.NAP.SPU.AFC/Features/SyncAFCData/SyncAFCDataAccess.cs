@@ -3,10 +3,15 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
+    using System.Collections.Generic;
 
     public interface ISyncAFCDataAccess
     {
-        CustToSyncAFCEntity GetCustomerToSyncAFC();
+        IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC();
+
+        IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
+
+        IEnumerable<GetAFCAccountEntity> GetAFCAccountInfo(string custIdJson);
     }
 
     public class SyncAFCDataAccess : ISyncAFCDataAccess
@@ -18,14 +23,31 @@
             repository = new DynamicRepository();
         }
 
-        public CustToSyncAFCEntity GetCustomerToSyncAFC()
+        public IEnumerable<GetAFCAccountEntity> GetAFCAccountInfo(string custIdJson)
         {
-            var criteria = new CustToSyncAFCGet();
-
-            using (var db = ObjectDbFactory.CreateInstance(criteria.GetSettingKey()))
+            var criteria = new GetAFCAccountInfoCriteria
             {
-                return db.QueryEntity<CustToSyncAFCEntity>(criteria);
-            }
+                B2CCustIdJson = custIdJson
+            };
+
+            return repository.Fetch<GetAFCAccountEntity>(criteria);
+        }
+
+        public IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds)
+        {
+            var criteria = new GetB2CCustIdsCriteria
+            {
+                CustIds = custIds
+            };
+
+            return repository.Fetch<GetB2CEntity>(criteria);
+        }
+
+        public IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC()
+        {
+            var criteria = new GetCustToSyncAFCCriteria();
+
+            return repository.Fetch<CustToSyncAFCEntity>(criteria);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     using Fanex.Data.Repository;
 
-    public class CustToSyncAFCGet : CriteriaBase
+    public class GetCustToSyncAFCCriteria : CriteriaBase
     {
         public override string GetSettingKey()
                => "CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch";
