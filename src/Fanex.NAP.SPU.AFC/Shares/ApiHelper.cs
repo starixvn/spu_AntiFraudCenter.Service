@@ -14,7 +14,6 @@
         [Obsolete("Too many generic and parameter")]
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param, int environment, int mailingListId)
         {
-
             using (var web = new HttpClient())
             {
                 var response = await web.PostAsJsonAsync(url, param).ConfigureAwait(false);
@@ -26,7 +25,6 @@
 
                 return await response.Content.ReadFromJsonAsync<TResult>().ConfigureAwait(false);
             }
-
         }
 
         public static async Task<TResult> Post<TResult>(string url, object param)

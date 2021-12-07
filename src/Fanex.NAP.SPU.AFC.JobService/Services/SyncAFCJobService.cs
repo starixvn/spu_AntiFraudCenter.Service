@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
     using Fanex.NAP.SPU.AFC.Features.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.JobService;
     using Fanex.NAP.SPU.AFC.Shares;
     using Sentry;
     using System;
@@ -9,7 +10,7 @@
 
     public interface ISyncAFCJobService
     {
-        Task<bool> Execute(int batchSize);
+        Task<bool> Execute();
     }
 
     public class SyncAFCJobService : ISyncAFCJobService
@@ -17,21 +18,24 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly ISyncAFCServices syncAFCServices;
+        private readonly IAppSettings appSettings;
 
         public SyncAFCJobService(
             ISentryClient sentryClient,
-            ISyncAFCServices syncAFCServices)
+            ISyncAFCServices syncAFCServices,
+            IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.syncAFCServices = syncAFCServices;
-            this.serviceName = "SyncAFC";
+            this.serviceName = "Service AntiFraudCenter";
+            this.appSettings = appSettings;
         }
 
-        public Task<bool> Execute(int batchSize)
+        public Task<bool> Execute()
         {
             try
             {
-                JobRun(batchSize);
+                JobRun();
             }
             catch (Exception ex)
             {
@@ -45,20 +49,26 @@
 
         #region Private Methods
 
-        private void JobRun(int batchSize)
+        private void JobRun()
         {
-            var customerToSyncAFC = syncAFCServices.GetCustomerToSyncAFC();
+            var custToCheck = syncAFCServices.GetCustomerToSyncAFC();
 
-            if (customerToSyncAFC != null && customerToSyncAFC.Any())
+            if (custToCheck != null && custToCheck.Any())
             {
-                var custToString = string.Join(",",customerToSyncAFC.Select(c => c.CustID).Distinct());
+                Parallel.Invoke(() =>
+                {
+                    var accToInsert = custToCheck.Where(c => c.FraudID != null && c.FraudID.Any());
 
-                var custB2CInfo = syncAFCServices.GetB2CInfo(custToString);
+                    syncAFCServices.InsertAFCAccountsAsync(accToInsert, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI);
+                },
+                () =>
+                {
+                    var accToDelete = custToCheck.Where(c => c.FraudID == null || !c.FraudID.Any());
 
-                ///TODO:
-                ///
+                    syncAFCServices.DeleteAFCAccountsAsync(accToDelete.Select(c => c.CustID).Distinct(), appSettings.AFCDeleteAccountsAPI);
+                });
 
-                JobRun(batchSize);
+                JobRun();
             }
         }
     }

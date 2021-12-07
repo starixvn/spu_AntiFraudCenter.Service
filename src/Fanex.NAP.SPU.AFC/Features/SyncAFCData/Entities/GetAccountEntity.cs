@@ -1,6 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 {
-    public class GetAFCAccountEntity
+    public class GetAccountEntity
     {
         public string CustId { get; set; }
 

@@ -3,14 +3,14 @@
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class GetAFCAccountInfoCriteria : CriteriaBase
+    public class GetB2CustIdsCriteria : CriteriaBase
     {
-        [SpParam(SqlParamName = "CustIdList")]
-        public string B2CCustIdJson { get; set; }
+        [SpParam(SqlParamName = "CustIds")]
+        public string CustIds { get; set; }
 
         public override string GetSettingKey()
         {
-            return "API_CustomerExtraInfo_Get";
+            return "AFC_Get_B2CCustId";
         }
 
         public override bool IsValid()

@@ -43,7 +43,6 @@ namespace Fanex.NAP.SPU.AFC.JobService
             services
                .AddHealthChecks();
 
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fanex.NAP.SPU.AFC.JobService", Version = "v1" });

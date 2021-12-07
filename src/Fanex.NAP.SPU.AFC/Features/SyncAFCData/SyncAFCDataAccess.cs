@@ -1,17 +1,21 @@
 ﻿namespace Fanex.NAP.SPU.AFC.Features.SyncAFCData
 {
-    using Fanex.Data;
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
+    using Newtonsoft.Json;
     using System.Collections.Generic;
 
     public interface ISyncAFCDataAccess
     {
+        IEnumerable<GetAccountEntity> GetAccountInfo(string custIdJson);
+
+        IEnumerable<GetB2CEntity> GetB2CustIds(string custIds);
+
+        IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
+
+        IEnumerable<ParticipantEntity> GetParticipant();
+
         IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC();
-
-        IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
-
-        IEnumerable<GetAFCAccountEntity> GetAFCAccountInfo(string custIdJson);
     }
 
     public class SyncAFCDataAccess : ISyncAFCDataAccess
@@ -23,19 +27,19 @@
             repository = new DynamicRepository();
         }
 
-        public IEnumerable<GetAFCAccountEntity> GetAFCAccountInfo(string custIdJson)
+        public IEnumerable<GetAccountEntity> GetAccountInfo(string custIdJson)
         {
-            var criteria = new GetAFCAccountInfoCriteria
+            var criteria = new GetAccountInfoCriteria
             {
                 B2CCustIdJson = custIdJson
             };
 
-            return repository.Fetch<GetAFCAccountEntity>(criteria);
+            return repository.Fetch<GetAccountEntity>(criteria);
         }
 
-        public IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds)
+        public IEnumerable<GetB2CEntity> GetB2CustIds(string custIds)
         {
-            var criteria = new GetB2CCustIdsCriteria
+            var criteria = new GetB2CustIdsCriteria
             {
                 CustIds = custIds
             };
@@ -48,6 +52,24 @@
             var criteria = new GetCustToSyncAFCCriteria();
 
             return repository.Fetch<CustToSyncAFCEntity>(criteria);
+        }
+
+        public IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs)
+        {
+            var criteria = new AccountCheckExistCriteria
+            {
+                JsonAccountInfo = JsonConvert.SerializeObject(accountIDs),
+                ParticipantID = participantID
+            };
+
+            return repository.Fetch<CheckAccountExistEntity>(criteria);
+        }
+
+        public IEnumerable<ParticipantEntity> GetParticipant()
+        {
+            var criteria = new ParticipantGetCriteria();
+
+            return repository.Fetch<ParticipantEntity>(criteria);
         }
     }
 }

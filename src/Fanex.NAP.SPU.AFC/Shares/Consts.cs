@@ -4,6 +4,8 @@
     {
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
 
+        public const string AFCInternalKey = "4824D237091879E4F2E0C02E61362D8F";
+
         public enum Category
         {
             Newmember = 201,

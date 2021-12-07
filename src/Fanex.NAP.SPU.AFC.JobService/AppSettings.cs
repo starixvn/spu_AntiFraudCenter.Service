@@ -13,6 +13,12 @@
         string SPName { get; }
 
         string SentryDsn { get; }
+
+        string AFCInsertAccountsAPI { get; }
+
+        string AFCUpdateAccountsAPI { get; }
+
+        string AFCDeleteAccountsAPI { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -23,6 +29,9 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string sentryDsn;
+        private readonly string afcInsertAccountsAPI;
+        private readonly string afcUpdateAccountsAPI;
+        private readonly string afcDeleteAccountsAPI;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -32,6 +41,9 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             sentryDsn = GetValue<string>("Sentry:Dsn");
+            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
+            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
+            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
         }
 
         #region Variables
@@ -59,6 +71,12 @@
         public string SPName => spName;
 
         public string SentryDsn => sentryDsn;
+
+        public string AFCInsertAccountsAPI => afcInsertAccountsAPI;
+
+        public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
+
+        public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
 
         #endregion Variables
 
