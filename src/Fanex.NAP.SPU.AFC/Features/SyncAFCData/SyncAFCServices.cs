@@ -6,6 +6,7 @@
     using Sentry;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -137,7 +138,7 @@
                                    {
                                        CustId = group.a.CustId,
                                        B2CustId = group.a.B2CustId,
-                                       CountryCode = group.a.CountryCode,
+                                       CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
                                        PhoneNo = group.a.PhoneNo,
                                        AccountName = group.a.AccountName,
                                        AccountNum = group.a.AccountNum,
@@ -160,6 +161,11 @@
                 if (participants != null && participants.Any())
                 {
                     var internalInfo = participants.SingleOrDefault(c => string.Equals(c.SecretKey, Consts.AFCInternalKey));
+
+                    if (internalInfo == null)
+                    {
+                        throw new Exception("AFC - Internal Key is Invalid");
+                    }
 
                     var result = syncAFCDataAccess.CheckAccountValidation(internalInfo.ParticipantID, accInfo.Select(c => new CheckAccountExistEntity { AccountID = c.B2CustId }));
 
