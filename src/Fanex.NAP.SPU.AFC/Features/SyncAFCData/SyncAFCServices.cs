@@ -14,9 +14,9 @@
     {
         IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC();
 
-        void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL);
+        void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey);
 
-        void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url);
+        void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey);
     }
 
     public class SyncAFCServices : ISyncAFCServices
@@ -36,7 +36,7 @@
             return syncAFCDataAccess.GetCustomerToSyncAFC();
         }
 
-        public void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL)
+        public void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey)
         {
             try
             {
@@ -46,9 +46,9 @@
 
                     if (accountInfo != null && accountInfo.Any())
                     {
-                        var notExistedAccount = CheckAccountExist(accountInfo);
+                        var notExistedAccount = CheckAccountExist(accountInfo, internalKey);
 
-                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL);
+                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL, internalKey);
                     }
                 }
             }
@@ -58,7 +58,7 @@
             }
         }
 
-        public void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url)
+        public void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey)
         {
             try
             {
@@ -70,7 +70,7 @@
                     {
                         var para = new DeleteAccountParasViewEntity
                         {
-                            Key = Consts.AFCInternalKey,
+                            Key = internalKey,
                             Data = b2cCustIds
                         };
 
@@ -152,7 +152,7 @@
             return new List<GetAccountViewEntity>();
         }
 
-        private IEnumerable<string> CheckAccountExist(IEnumerable<GetAccountViewEntity> accInfo)
+        private IEnumerable<string> CheckAccountExist(IEnumerable<GetAccountViewEntity> accInfo, string internalKey)
         {
             if (accInfo != null && accInfo.Any())
             {
@@ -160,7 +160,7 @@
 
                 if (participants != null && participants.Any())
                 {
-                    var internalInfo = participants.SingleOrDefault(c => string.Equals(c.SecretKey, Consts.AFCInternalKey));
+                    var internalInfo = participants.SingleOrDefault(c => string.Equals(c.SecretKey, internalKey));
 
                     if (internalInfo == null)
                     {
@@ -186,13 +186,13 @@
         /// </summary>
         /// <param name="accInfo"></param>
         /// <param name="isInsertAction"></param>
-        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url)
+        private async Task SyncAFCData(IEnumerable<GetAccountViewEntity> accInfo, string url, string internalKey)
         {
             if (accInfo != null && accInfo.Any())
             {
                 var para = new InsertAccountParasViewEntity
                 {
-                    Key = Consts.AFCInternalKey,
+                    Key = internalKey,
                     Data = accInfo
                 };
 
@@ -200,7 +200,7 @@
             }
         }
 
-        private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL)
+        private void SyncAccountToAFCDBAsync(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, string insertURL, string updateURL, string internalKey)
         {
             if (accountInfo != null && accountInfo.Any())
             {
@@ -213,7 +213,7 @@
                     {
                         try
                         {
-                            await SyncAFCData(accToInsert, insertURL);
+                            await SyncAFCData(accToInsert, insertURL, internalKey);
                         }
                         catch (Exception ex)
                         {
@@ -225,7 +225,7 @@
                     {
                         try
                         {
-                            await SyncAFCData(accToUpdate, updateURL);
+                            await SyncAFCData(accToUpdate, updateURL, internalKey);
                         }
                         catch (Exception ex)
                         {

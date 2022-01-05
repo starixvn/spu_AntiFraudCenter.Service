@@ -59,13 +59,13 @@
                 {
                     var accToInsert = custToCheck.Where(c => c.FraudID != null && c.FraudID.Any());
 
-                    syncAFCServices.InsertAFCAccountsAsync(accToInsert, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI);
+                    syncAFCServices.InsertAFCAccountsAsync(accToInsert, appSettings.AFCInsertAccountsAPI, appSettings.AFCUpdateAccountsAPI, appSettings.AFCInternalKey);
                 },
                 () =>
                 {
                     var accToDelete = custToCheck.Where(c => c.FraudID == null || !c.FraudID.Any());
 
-                    syncAFCServices.DeleteAFCAccountsAsync(accToDelete.Select(c => c.CustID).Distinct(), appSettings.AFCDeleteAccountsAPI);
+                    syncAFCServices.DeleteAFCAccountsAsync(accToDelete.Select(c => c.CustID).Distinct(), appSettings.AFCDeleteAccountsAPI, appSettings.AFCInternalKey);
                 });
 
                 JobRun();

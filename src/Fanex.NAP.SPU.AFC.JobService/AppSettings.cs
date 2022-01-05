@@ -19,6 +19,8 @@
         string AFCUpdateAccountsAPI { get; }
 
         string AFCDeleteAccountsAPI { get; }
+
+        string AFCInternalKey { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -32,6 +34,7 @@
         private readonly string afcInsertAccountsAPI;
         private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
+        private readonly string afcInternalKey;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -44,6 +47,7 @@
             afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
             afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
             afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
+            afcInternalKey = GetValue<string>(nameof(AFCInternalKey));
         }
 
         #region Variables
@@ -77,6 +81,8 @@
         public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
 
         public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
+
+        public string AFCInternalKey => afcInternalKey;
 
         #endregion Variables
 
