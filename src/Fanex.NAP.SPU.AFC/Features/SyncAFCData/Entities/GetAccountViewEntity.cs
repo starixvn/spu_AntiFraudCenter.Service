@@ -29,5 +29,8 @@ namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 
         [JsonProperty(PropertyName = "FraudID")]
         public IEnumerable<int> FraudID { get; set; }
+
+        [JsonProperty(PropertyName = "FullName")]
+        public string FullName { get; set; }
     }
 }

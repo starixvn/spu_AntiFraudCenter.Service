@@ -13,5 +13,7 @@
         public string AccountNum { get; set; }
 
         public string AccountName { get; set; }
+
+        public string FullName { get; set; }
     }
 }

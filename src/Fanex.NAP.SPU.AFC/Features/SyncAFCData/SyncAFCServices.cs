@@ -58,7 +58,7 @@
             }
         }
 
-        public void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey)
+        public async void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey)
         {
             try
             {
@@ -74,7 +74,7 @@
                             Data = b2cCustIds
                         };
 
-                        Task.WaitAll(ApiHelper.Post<bool>(url, para));
+                        await ApiHelper.Post<AccountDBResult>(url, para);
                     }
                 }
             }
@@ -196,7 +196,7 @@
                     Data = accInfo
                 };
 
-                await ApiHelper.Post<bool>(url, para);
+                await ApiHelper.Post<AccountDBResult>(url, para);
             }
         }
 
