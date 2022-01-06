@@ -105,12 +105,9 @@
             return new List<GetAccountViewEntity>();
         }
 
-        private IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountEntity> accountInfo
-                                                      , IEnumerable<CustToSyncAFCEntity> fraudIDs
-                                                      , IEnumerable<GetB2CEntity> b2cCustIDs)
+        private static IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<CustToSyncAFCEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
         {
-            if (accountInfo != null && fraudIDs != null && b2cCustIDs != null &&
-                accountInfo.Any() && fraudIDs.Any() && b2cCustIDs.Any())
+            if (IsValid(accountInfo, fraudIDs, b2cCustIDs))
             {
                 var accInfo = accountInfo.GroupJoin(b2cCustIDs,
                                    a => a.CustId,
@@ -207,35 +204,39 @@
                 var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CustId)) : null;
                 var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CustId)) : accountInfo;
                 
-                var tasks = new List<Task>
+                Parallel.Invoke(async () =>
                 {
-                    Task.Run(async () =>
+                    try
                     {
-                        try
-                        {
-                            await SyncAFCData(accToInsert, insertURL, internalKey);
-                        }
-                        catch (Exception ex)
-                        {
-                           Utilities.LogSentryError(ServiceName, "CTS.CC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
-                        }
-                    }),
-
-                    Task.Run(async () =>
+                        await SyncAFCData(accToInsert, insertURL, internalKey);
+                    }
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            await SyncAFCData(accToUpdate, updateURL, internalKey);
-                        }
-                        catch (Exception ex)
-                        {
-                           Utilities.LogSentryError(ServiceName, "Update Accounts fail", accToUpdate, ex, sentryClient);
-                        }
-                    })
-                };
-
-                Task.WaitAll(tasks.ToArray());
+                        Utilities.LogSentryError(ServiceName, "AFC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
+                    }
+                },
+                async () =>
+                {
+                    try
+                    {
+                        await SyncAFCData(accToUpdate, updateURL, internalKey);
+                    }
+                    catch (Exception ex)
+                    {
+                        Utilities.LogSentryError(ServiceName, "AFC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
+                    }
+                });
             }
+        }
+
+        private static bool IsValid(IEnumerable<GetAccountEntity> accountInfo, IEnumerable<CustToSyncAFCEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
+        {
+            if (accountInfo != null && fraudIDs != null && b2cCustIDs != null)
+            {
+                return accountInfo.Any() && fraudIDs.Any() && b2cCustIDs.Any();
+            }
+
+            return false;
         }
 
         #endregion Private methods
