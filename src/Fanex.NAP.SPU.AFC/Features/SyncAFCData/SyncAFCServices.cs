@@ -129,7 +129,8 @@
                                         PhoneNo = group.a.PhoneNo,
                                         AccountName = group.a.AccountName,
                                         AccountNum = group.a.AccountNum,
-                                        Email = group.a.Email
+                                        Email = group.a.Email,
+                                        FullName = group.a.FullName
                                     })
                                 .GroupJoin(fraudIDs,
                                     a => a.CustId,
@@ -146,6 +147,7 @@
                                        AccountName = group.a.AccountName,
                                        AccountNum = group.a.AccountNum,
                                        Email = group.a.Email,
+                                       FullName = group.a.FullName,
                                        FraudID = temp?.FraudIDList
                                    });
 
