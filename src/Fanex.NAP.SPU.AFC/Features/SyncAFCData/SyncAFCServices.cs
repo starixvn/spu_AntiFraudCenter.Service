@@ -223,10 +223,12 @@
                 {
                     var result = await SyncAFCData(accToInsert, insertURL, internalKey);
 
-                    if (result.StatusCode != (int)HttpStatus.OK)
+                    if (result.StatusCode == (int)HttpStatus.OK || result.StatusCode == (int)HttpStatus.Created)
                     {
-                        Utilities.LogSentryError(ServiceName, $"AFC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
+                        return;
                     }
+
+                    Utilities.LogSentryError(ServiceName, $"AFC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
                 }
                 catch (Exception ex)
                 {
