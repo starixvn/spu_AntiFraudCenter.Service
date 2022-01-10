@@ -5,8 +5,8 @@
 		<Setting Key="API_CustomerExtraInfo_Get" SpName="API_CustomerExtraInfo_Get" DbName="MySQL.LicenseDB.Siebog" />
 		<Setting Key="AFC_Get_B2CCustId" SpName="AFC_Get_B2CCustId" DbName="DBAGE.bodb02.bodbAdminNet" />
 		<Setting Key="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" SpName="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
-		<Setting Key="AFC_DC_Participant_Get" SpName="AFC_DC_Participant_Get" DbName="MySQL.AFC_DataCenter.afcAPI" />
-		<Setting Key="AFC_DC_Account_CheckExist" SpName="AFC_DC_Account_CheckExist" DbName="MySQL.AFC_DataCenter.afcAPI" />
+		<Setting Key="AFC_DC_Participant_Get" SpName="AFC_DC_Participant_Get" DbName="MySQL.AFC_DataCenter.afcService" />
+		<Setting Key="AFC_DC_Account_CheckExist" SpName="AFC_DC_Account_CheckExist" DbName="MySQL.AFC_DataCenter.afcService" />
 		<Setting Key="AFC_DC_ErrorLog_Insert" SpName="AFC_DC_ErrorLog_Insert" DbName="MySQL.AFC_DataCenter.afcAPIAdmin" />
 	</Function>
 </Functions>
