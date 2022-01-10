@@ -21,6 +21,8 @@
         string AFCDeleteAccountsAPI { get; }
 
         string AFCInternalKey { get; }
+
+        int BatchSize { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -35,6 +37,7 @@
         private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
         private readonly string afcInternalKey;
+        private readonly int batchSize;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -48,6 +51,7 @@
             afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
             afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
             afcInternalKey = GetValue<string>(nameof(AFCInternalKey));
+            batchSize = GetValue<int>(nameof(BatchSize));
         }
 
         #region Variables
@@ -83,6 +87,8 @@
         public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
 
         public string AFCInternalKey => afcInternalKey;
+
+        public int BatchSize => batchSize;
 
         #endregion Variables
 

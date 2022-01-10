@@ -15,9 +15,9 @@
     {
         IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC();
 
-        void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey);
+        void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey, int batchSize);
 
-        void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey);
+        void DeleteAFCAccountsAsync(IEnumerable<int> custToDelete, string url, string internalKey, int batchSize);
     }
 
     public class SyncAFCServices : ISyncAFCServices
@@ -37,20 +37,25 @@
             return syncAFCDataAccess.GetCustomerToSyncAFC();
         }
 
-        public void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey)
+        public void InsertAFCAccountsAsync(IEnumerable<CustToSyncAFCEntity> custToCheck, string insertURL, string updateURL, string internalKey, int batchSize)
         {
             try
             {
                 if (custToCheck != null && custToCheck.Any())
                 {
-                    var accountInfo = GetAccountInfo(custToCheck);
+                    var custChunk = custToCheck.Chunk(batchSize);
 
-                    if (accountInfo != null && accountInfo.Any())
+                    foreach (var custs in custChunk)
                     {
-                        var notExistedAccount = CheckAccountExist(accountInfo, internalKey);
+                        var accountInfo = GetAccountInfo(custs);
 
-                        SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL, internalKey);
-                    }
+                        if (accountInfo != null && accountInfo.Any())
+                        {
+                            var notExistedAccount = CheckAccountExist(accountInfo, internalKey);
+
+                            SyncAccountToAFCDBAsync(accountInfo, notExistedAccount, insertURL, updateURL, internalKey);
+                        }
+                    }    
                 }
             }
             catch (Exception ex)
@@ -60,36 +65,41 @@
             }
         }
 
-        public async void DeleteAFCAccountsAsync(IEnumerable<int> custIds, string url, string internalKey)
+        public async void DeleteAFCAccountsAsync(IEnumerable<int> custToDelete, string url, string internalKey, int batchSize)
         {
             try
             {
-                if (custIds != null && custIds.Any())
+                if (custToDelete != null && custToDelete.Any())
                 {
-                    var b2cCustIds = syncAFCDataAccess.GetB2CustIds(string.Join(",", custIds));
+                    var custChunk = custToDelete.Chunk(batchSize);
 
-                    if (b2cCustIds != null && b2cCustIds.Any())
+                    foreach (var custIds in custChunk)
                     {
-                        var para = new DeleteAccountParasViewEntity
-                        {
-                            Key = internalKey,
-                            Data = b2cCustIds
-                        };
+                        var b2cCustIds = syncAFCDataAccess.GetB2CustIds(string.Join(",", custIds));
 
-                        var result = await ApiHelper.Post<AccountDBResult>(url, para);
-
-                        if (result.StatusCode != (int)HttpStatus.OK)
+                        if (b2cCustIds != null && b2cCustIds.Any())
                         {
-                            Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
-                            syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(custIds));
+                            var para = new DeleteAccountParasViewEntity
+                            {
+                                Key = internalKey,
+                                Data = b2cCustIds
+                            };
+
+                            var result = await ApiHelper.Post<AccountDBResult>(url, para);
+
+                            if (result.StatusCode != (int)HttpStatus.OK)
+                            {
+                                Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
+                                syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(custIds));
+                            }
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "Delete Accounts fail", custIds, ex, sentryClient);
-                syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
+                Utilities.LogSentryError(ServiceName, "Delete Accounts fail", custToDelete, ex, sentryClient);
+                syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToDelete));
             }
         }
 
