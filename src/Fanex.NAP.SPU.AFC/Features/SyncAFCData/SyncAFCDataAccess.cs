@@ -16,6 +16,8 @@
         IEnumerable<ParticipantEntity> GetParticipant();
 
         IEnumerable<CustToSyncAFCEntity> GetCustomerToSyncAFC();
+
+        void InsertErrorLog(int? participantID, string errorMessage, string dataJson);
     }
 
     public class SyncAFCDataAccess : ISyncAFCDataAccess
@@ -70,6 +72,18 @@
             var criteria = new ParticipantGetCriteria();
 
             return repository.Fetch<ParticipantEntity>(criteria);
+        }
+
+        public void InsertErrorLog(int? participantID, string errorMessage, string dataJson)
+        {
+            var criteria = new ErrorLogInsertCriteria
+            {
+                ErrorMessage = errorMessage,
+                DataJson = dataJson,
+                ParticipantID = participantID
+            };
+
+            repository.Execute(criteria);
         }
     }
 }

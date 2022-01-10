@@ -56,6 +56,7 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(ServiceName, "Insert/Updte Accounts fail", custToCheck, ex, sentryClient);
+                syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToCheck));
             }
         }
 
@@ -80,6 +81,7 @@
                         if (result.StatusCode != (int)HttpStatus.OK)
                         {
                             Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
+                            syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(custIds));
                         }
                     }
                 }
@@ -87,6 +89,7 @@
             catch (Exception ex)
             {
                 Utilities.LogSentryError(ServiceName, "Delete Accounts fail", custIds, ex, sentryClient);
+                syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
             }
         }
 
@@ -229,10 +232,12 @@
                     }
 
                     Utilities.LogSentryError(ServiceName, $"AFC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
+                    syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(accToInsert));
                 }
                 catch (Exception ex)
                 {
                     Utilities.LogSentryError(ServiceName, "AFC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
+                    syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accToInsert));
                 }
             },
             async () =>
@@ -244,11 +249,13 @@
                     if (result.StatusCode != (int)HttpStatus.OK)
                     {
                         Utilities.LogSentryError(ServiceName, $"AFC Service - Update Accounts fail", accToUpdate, new Exception(result.ErrorMessage), sentryClient);
+                        syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(accToUpdate));
                     }
                 }
                 catch (Exception ex)
                 {
                     Utilities.LogSentryError(ServiceName, "AFC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
+                    syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accToUpdate));
                 }
             });
         }
