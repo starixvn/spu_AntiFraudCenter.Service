@@ -85,20 +85,18 @@
                                 Data = b2cCustIds
                             };
 
-                            var result = await ApiHelper.Post<AccountDBResult>(url, para);
-
-                            if (result.StatusCode != (int)HttpStatus.OK)
-                            {
-                                Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Delete Accounts fail", custIds, new Exception(result.ErrorMessage), sentryClient);
-                                syncAFCDataAccess.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(custIds));
-                            }
+                            await ApiHelper.Post<AccountDBResult>(url, para);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, "Delete Accounts fail", custToDelete, ex, sentryClient);
+                if (IsLogError(ex.Message))
+                {
+                    Utilities.LogSentryError(ServiceName, "Delete Accounts fail", custToDelete, ex, sentryClient);
+                }
+
                 syncAFCDataAccess.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToDelete));
             }
         }
@@ -278,6 +276,16 @@
             }
 
             return false;
+        }
+
+        private static bool IsLogError(string errorMessage)
+        {
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return !errorMessage.Contains("Not Exist");
+            }
+
+            return true;
         }
 
         #endregion Private methods
