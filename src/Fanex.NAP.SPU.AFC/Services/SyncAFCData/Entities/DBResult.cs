@@ -2,12 +2,10 @@
 {
     using Newtonsoft.Json;
 
-    public class AccountDBResult
+    public class DBResult
     {
-        [JsonProperty(PropertyName = "StatusCode")]
         public int StatusCode { get; set; }
 
-        [JsonProperty(PropertyName = "ErrorMessage")]
         public string ErrorMessage { get; set; }
     }
 }

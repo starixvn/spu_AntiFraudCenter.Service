@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.AFC.Features.SystemParameter
+﻿namespace Fanex.NAP.SPU.AFC.Services.SystemParameter
 {
     using System;
     using static Fanex.NAP.SPU.AFC.Shares.Consts;

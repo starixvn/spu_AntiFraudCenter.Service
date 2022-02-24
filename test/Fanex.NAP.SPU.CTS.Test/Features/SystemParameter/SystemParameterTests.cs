@@ -1,7 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.AFC.Tests.Features.SystemParameter
 {
     using Fanex.NAP.SPU.AFC.CC.Features.SystemParameter;
-    using Fanex.NAP.SPU.AFC.Features.SystemParameter;
+    using Fanex.NAP.SPU.AFC.Services.SystemParameter;
     using FluentAssertions;
     using NSubstitute;
     using System;

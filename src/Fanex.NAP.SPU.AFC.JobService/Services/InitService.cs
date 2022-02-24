@@ -3,7 +3,8 @@
     using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
-    using Fanex.NAP.SPU.AFC.Features.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.Services.SystemParameter;
     using Fanex.NAP.SPU.CTS.CC.JobService.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,14 @@
             services.AddSingleton<ISyncAFCDataAccess, SyncAFCDataAccess>();
             services.AddSingleton<ISyncAFCServices, SyncAFCServices>();
             services.AddSingleton<ISyncAFCJobService, SyncAFCJobService>();
+
+            services.AddSingleton<IB2CAccountServices, B2CAccountServices>();
+
+            services.AddSingleton<IErrorHandleDataAccess, ErrorHandleDataAccess>();
+            services.AddSingleton<IErrorHandleServices, ErrorHandleServices>();
+
+            services.AddSingleton<ISystemParameterDataAccess, SystemParameterDataAccess>();
+            services.AddSingleton<ISystemParameterServices, SystemParameterServices>();         
         }
     }
 }

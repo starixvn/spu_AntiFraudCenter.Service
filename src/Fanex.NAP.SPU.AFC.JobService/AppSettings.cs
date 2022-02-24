@@ -14,13 +14,15 @@
 
         string SentryDsn { get; }
 
-        string AFCInsertAccountsAPI { get; }
+        string AFCInsertAccountsURL { get; }
 
-        string AFCUpdateAccountsAPI { get; }
+        string AFCUpdateAccountsURL { get; }
 
-        string AFCDeleteAccountsAPI { get; }
+        string AFCDeleteAccountsURL { get; }
 
-        string AFCInternalKey { get; }
+        string AFCGetAccountURL { get; }
+
+        string AFCInternalParticipantKey { get; }
 
         int BatchSize { get; }
     }
@@ -36,6 +38,7 @@
         private readonly string afcInsertAccountsAPI;
         private readonly string afcUpdateAccountsAPI;
         private readonly string afcDeleteAccountsAPI;
+        private readonly string afcGetAccountURL;
         private readonly string afcInternalKey;
         private readonly int batchSize;
 
@@ -47,10 +50,11 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             sentryDsn = GetValue<string>("Sentry:Dsn");
-            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsAPI));
-            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsAPI));
-            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsAPI));
-            afcInternalKey = GetValue<string>(nameof(AFCInternalKey));
+            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsURL));
+            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsURL));
+            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsURL));
+            afcGetAccountURL = GetValue<string>(nameof(AFCGetAccountURL));
+            afcInternalKey = GetValue<string>(nameof(AFCInternalParticipantKey));
             batchSize = GetValue<int>(nameof(BatchSize));
         }
 
@@ -80,13 +84,15 @@
 
         public string SentryDsn => sentryDsn;
 
-        public string AFCInsertAccountsAPI => afcInsertAccountsAPI;
+        public string AFCInsertAccountsURL => afcInsertAccountsAPI;
 
-        public string AFCUpdateAccountsAPI => afcUpdateAccountsAPI;
+        public string AFCUpdateAccountsURL => afcUpdateAccountsAPI;
 
-        public string AFCDeleteAccountsAPI => afcDeleteAccountsAPI;
+        public string AFCDeleteAccountsURL => afcDeleteAccountsAPI;
 
-        public string AFCInternalKey => afcInternalKey;
+        public string AFCGetAccountURL => afcGetAccountURL;
+
+        public string AFCInternalParticipantKey => afcInternalKey;
 
         public int BatchSize => batchSize;
 
