@@ -1,15 +1,15 @@
 ﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
 {
-    using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.JobService;
+    using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
     using Fanex.NAP.SPU.AFC.Shares;
+    using Newtonsoft.Json;
     using Sentry;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
 
     public interface ISyncAFCJobService
     {
@@ -78,7 +78,6 @@
             }
         }
 
-
         public void InsertAccounts(IEnumerable<CustToSyncAFCEntity> custToCheck, int batchSize)
         {
             try
@@ -95,7 +94,7 @@
                         {
                             var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c =>c.AccountID), internalParticipantId);
+                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.AccountID), internalParticipantId);
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId);
                         }

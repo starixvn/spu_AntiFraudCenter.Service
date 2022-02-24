@@ -7,7 +7,6 @@
     using Sentry;
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.AFC.Shares.Consts;
@@ -55,11 +54,5 @@
 
             return Enumerable.Empty<GetAccountModel>();
         }
-
-        #region Private methods
-
-
-
-        #endregion Private methods
     }
 }

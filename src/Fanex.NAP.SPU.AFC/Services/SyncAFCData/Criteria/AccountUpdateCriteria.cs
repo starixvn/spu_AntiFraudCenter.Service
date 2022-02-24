@@ -5,7 +5,6 @@
 
     public class AccountUpdateCriteria : NonQueryCommand
     {
- 
         [SpParam(SqlParamName = "ip_AccountInfo")]
         public string JsonAccountInfo { get; set; }
 
@@ -17,7 +16,7 @@
 
         public override string GetSettingKey()
         {
-            return "AFC_DC_Account_Update" ;
+            return "AFC_DC_Account_Update";
         }
 
         public override bool IsValid()

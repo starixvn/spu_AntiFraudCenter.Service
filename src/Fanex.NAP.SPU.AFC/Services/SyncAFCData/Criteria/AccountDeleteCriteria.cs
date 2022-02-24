@@ -13,7 +13,7 @@
 
         public override string GetSettingKey()
         {
-            return "AFC_DC_Account_Delete" ;
+            return "AFC_DC_Account_Delete";
         }
 
         public override bool IsValid()

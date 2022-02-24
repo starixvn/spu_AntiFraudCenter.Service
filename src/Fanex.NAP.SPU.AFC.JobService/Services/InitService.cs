@@ -36,7 +36,7 @@
             services.AddSingleton<IErrorHandleServices, ErrorHandleServices>();
 
             services.AddSingleton<ISystemParameterDataAccess, SystemParameterDataAccess>();
-            services.AddSingleton<ISystemParameterServices, SystemParameterServices>();         
+            services.AddSingleton<ISystemParameterServices, SystemParameterServices>();
         }
     }
 }

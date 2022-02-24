@@ -5,12 +5,10 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
-    using static Fanex.NAP.SPU.AFC.Shares.Consts;
 
     public interface ISyncAFCServices
     {
@@ -70,7 +68,7 @@
             return Enumerable.Empty<GetAccountViewEntity>();
         }
 
-        public IEnumerable<string> GetAccountNotExist (IEnumerable<string> accInfo, int? internalParticipantId)
+        public IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId)
         {
             if (accInfo != null && accInfo.Any() && internalParticipantId != null)
             {
@@ -82,7 +80,7 @@
 
                     return notExistedAcc ?? Enumerable.Empty<string>();
                 }
-        }
+            }
 
             return Enumerable.Empty<string>();
         }
@@ -166,7 +164,6 @@
                 }
             });
         }
-
 
         public DBResult DeleteAccounts(IEnumerable<string> accounts, int? participantID)
         {
