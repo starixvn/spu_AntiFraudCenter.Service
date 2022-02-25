@@ -7,9 +7,9 @@
 
     public interface ISyncAFCDataAccess
     {
-        DBResult InsertAccounts(int? participantID, IEnumerable<GetAccountViewEntity> accounts);
+        DBResult InsertAccounts(int? participantID, IEnumerable<AccountViewModel> accounts);
 
-        DBResult UpdateAccounts(int? participantID, IEnumerable<GetAccountViewEntity> accounts);
+        DBResult UpdateAccounts(int? participantID, IEnumerable<AccountViewModel> accounts);
 
         DBResult DeleteAccounts(int? participantID, IEnumerable<string> b2cAccountIds);
 
@@ -33,7 +33,7 @@
             repository = new DynamicRepository();
         }
 
-        public DBResult InsertAccounts(int? participantID, IEnumerable<GetAccountViewEntity> accounts)
+        public DBResult InsertAccounts(int? participantID, IEnumerable<AccountViewModel> accounts)
         {
             var criteria = new AccountInsertCriteria()
             {
@@ -50,7 +50,7 @@
             };
         }
 
-        public DBResult UpdateAccounts(int? participantID, IEnumerable<GetAccountViewEntity> accounts)
+        public DBResult UpdateAccounts(int? participantID, IEnumerable<AccountViewModel> accounts)
         {
             var criteria = new AccountUpdateCriteria()
             {

@@ -10,9 +10,9 @@
     public class JobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
-        private readonly ISyncAFCJobService syncAFCJobService;
+        private readonly ISyncAccountJobService syncAFCJobService;
 
-        public JobController(ISentryClient sentryClient, ISyncAFCJobService syncAFCJobService)
+        public JobController(ISentryClient sentryClient, ISyncAccountJobService syncAFCJobService)
         {
             this.sentryClient = sentryClient;
             this.syncAFCJobService = syncAFCJobService;

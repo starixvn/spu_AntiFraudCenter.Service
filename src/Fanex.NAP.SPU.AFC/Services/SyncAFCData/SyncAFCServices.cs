@@ -14,11 +14,11 @@
     {
         IEnumerable<CustToSyncAFCEntity> GetCustChangedCategory();
 
-        IEnumerable<GetAccountViewEntity> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url);
+        IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url);
 
         IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId);
 
-        void SyncAccounts(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId);
+        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId);
 
         DBResult DeleteAccounts(IEnumerable<string> accounts, int? participantID);
 
@@ -51,7 +51,7 @@
             return syncAFCDataAccess.GetCustChangedCategory();
         }
 
-        public IEnumerable<GetAccountViewEntity> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url)
+        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
@@ -65,7 +65,7 @@
                 }
             }
 
-            return Enumerable.Empty<GetAccountViewEntity>();
+            return Enumerable.Empty<AccountViewModel>();
         }
 
         public IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId)
@@ -117,7 +117,7 @@
         /// <summary>
         /// Update/Insert B2CAccount to AFC Database
         /// </summary>
-        public void SyncAccounts(IEnumerable<GetAccountViewEntity> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId)
+        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId)
         {
             if (accountInfo == null || !accountInfo.Any())
             {
@@ -174,10 +174,9 @@
 
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };
         }
-
         #region Private methods
 
-        private IEnumerable<GetAccountViewEntity> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<CustToSyncAFCEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
+        private IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<CustToSyncAFCEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
         {
             if (IsValid(accounts, fraudIDs, b2cCustIDs))
             {
@@ -187,9 +186,9 @@
                                    (a, b) => new { a, b })
                                .SelectMany(
                                     group => group.b.DefaultIfEmpty(),
-                                    (group, temp) => new GetAccountViewEntity
+                                    (group, temp) => new AccountViewModel
                                     {
-                                        CustId = temp?.CustId,
+                                        CustId = temp.CustId,
                                         AccountID = group.a.AccountID,
                                         CountryCode = group.a.CountryCode,
                                         Phone = group.a.Phone,
@@ -204,7 +203,7 @@
                                     (a, f) => new { a, f })
                                 .SelectMany(
                                    group => group.f.DefaultIfEmpty(),
-                                   (group, temp) => new GetAccountViewEntity
+                                   (group, temp) => new AccountViewModel
                                    {
                                        CustId = group.a.CustId,
                                        AccountID = group.a.AccountID,
@@ -217,13 +216,13 @@
                                        FraudID = temp?.FraudIDList
                                    });
 
-                return accInfo ?? Enumerable.Empty<GetAccountViewEntity>();
+                return accInfo ?? Enumerable.Empty<AccountViewModel>();
             }
 
-            return Enumerable.Empty<GetAccountViewEntity>();
+            return Enumerable.Empty<AccountViewModel>();
         }
 
-        private DBResult InsertAccounts(IEnumerable<GetAccountViewEntity> accounts, int? participantID)
+        private DBResult InsertAccounts(IEnumerable<AccountViewModel> accounts, int? participantID)
         {
             if (accounts != null && accounts.Any() && participantID != null)
             {
@@ -233,7 +232,7 @@
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };
         }
 
-        private DBResult UpdateAccounts(IEnumerable<GetAccountViewEntity> accounts, int? participantID)
+        private DBResult UpdateAccounts(IEnumerable<AccountViewModel> accounts, int? participantID)
         {
             if (accounts != null && accounts.Any() && participantID != null)
             {

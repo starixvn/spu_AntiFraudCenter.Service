@@ -11,12 +11,12 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public interface ISyncAFCJobService
+    public interface ISyncAccountEventService
     {
         Task<bool> Execute();
     }
 
-    public class SyncAFCJobService : ISyncAFCJobService
+    public class SyncAccountEventService : ISyncAccountEventService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
@@ -24,7 +24,7 @@
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
-        public SyncAFCJobService(
+        public SyncAccountEventService(
             ISentryClient sentryClient,
             ISyncAFCServices syncAFCServices,
             IErrorHandleServices errorHandleServices,
@@ -41,7 +41,7 @@
         {
             try
             {
-                JobRun();
+                Process();
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@
 
         #region Private Methods
 
-        private void JobRun()
+        private void Process()
         {
             var custToCheck = syncAFCServices.GetCustChangedCategory();
 
@@ -74,7 +74,7 @@
                     DeleteAccounts(accToDelete, appSettings.BatchSize);
                 });
 
-                JobRun();
+                Process();
             }
         }
 

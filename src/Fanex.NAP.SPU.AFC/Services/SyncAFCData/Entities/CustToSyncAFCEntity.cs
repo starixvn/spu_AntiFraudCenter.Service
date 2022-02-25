@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿
 
 namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class CustToSyncAFCEntity
     {
-        public int CustID { get; set; }
+        public Int64 CustID { get; set; }
 
         public string FraudID { get; set; }
 

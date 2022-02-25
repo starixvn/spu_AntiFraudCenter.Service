@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-
-namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
+﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 {
-    public class GetAccountViewEntity
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
+    public class AccountViewModel
     {
         [IgnoreDataMember]
-        public int? CustId { get; set; }
+        public Int64 CustId { get; set; }
 
         [JsonProperty(PropertyName = "AccountID")]
         public string AccountID { get; set; }

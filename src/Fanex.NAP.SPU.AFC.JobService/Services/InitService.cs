@@ -28,7 +28,7 @@
         {
             services.AddSingleton<ISyncAFCDataAccess, SyncAFCDataAccess>();
             services.AddSingleton<ISyncAFCServices, SyncAFCServices>();
-            services.AddSingleton<ISyncAFCJobService, SyncAFCJobService>();
+            services.AddSingleton<ISyncAccountJobService, SyncAccountJobService>();
 
             services.AddSingleton<IB2CAccountServices, B2CAccountServices>();
 

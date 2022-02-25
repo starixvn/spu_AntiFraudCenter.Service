@@ -7,6 +7,6 @@ namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
     {
         public string Key { get; set; }
 
-        public IEnumerable<GetAccountViewEntity> Data { get; set; }
+        public IEnumerable<AccountViewModel> Data { get; set; }
     }
 }
