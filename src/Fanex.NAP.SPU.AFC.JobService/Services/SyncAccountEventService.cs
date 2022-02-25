@@ -94,7 +94,7 @@
                         {
                             var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.AccountID), internalParticipantId);
+                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId);
                         }

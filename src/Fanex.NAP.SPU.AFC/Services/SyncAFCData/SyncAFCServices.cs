@@ -124,8 +124,8 @@
                 return;
             }
 
-            var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.AccountID)) : null;
-            var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.AccountID)) : accountInfo;
+            var accToInsert = notExistedAccount.Any() ? accountInfo.Where(c => notExistedAccount.Contains(c.B2CCustId)) : null;
+            var accToUpdate = notExistedAccount.Any() ? accountInfo.Where(c => !notExistedAccount.Contains(c.B2CCustId)) : accountInfo;
 
             Parallel.Invoke(() =>
             {
@@ -182,7 +182,7 @@
             if (IsValid(accounts, fraudIDs, b2cCustIDs))
             {
                 var accInfo = accounts.GroupJoin(b2cCustIDs,
-                                   a => a.AccountID,
+                                   a => a.B2CCustId,
                                    b => b.B2CCustId,
                                    (a, b) => new { a, b })
                                .SelectMany(
@@ -190,7 +190,7 @@
                                     (group, temp) => new AccountViewModel
                                     {
                                         CustId = temp.CustId,
-                                        AccountID = group.a.AccountID,
+                                        B2CCustId = group.a.B2CCustId,
                                         CountryCode = group.a.CountryCode,
                                         Phone = group.a.Phone,
                                         BankName = group.a.BankName,
@@ -207,7 +207,7 @@
                                    (group, temp) => new AccountViewModel
                                    {
                                        CustId = group.a.CustId,
-                                       AccountID = group.a.AccountID,
+                                       B2CCustId = group.a.B2CCustId,
                                        CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
                                        Phone = group.a.Phone,
                                        BankName = group.a.BankName,

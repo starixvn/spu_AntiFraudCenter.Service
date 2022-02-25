@@ -14,7 +14,7 @@
         public Int64 CustId { get; set; }
 
         [JsonProperty(PropertyName = "AccountID")]
-        public string AccountID { get; set; }
+        public string B2CCustId { get; set; }
 
         [JsonProperty(PropertyName = "CountryCode")]
         public string CountryCode { get; set; }

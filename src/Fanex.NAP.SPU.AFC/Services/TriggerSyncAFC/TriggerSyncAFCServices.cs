@@ -67,7 +67,7 @@
                                    .Select(c => new AccountViewModel
                                    {
                                        CustId = c.a.CustId,
-                                       AccountID = c.a.AccountID,
+                                       B2CCustId = c.a.B2CCustId,
                                        CountryCode = new RegionInfo(c.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
                                        Phone = c.a.Phone,
                                        BankName = c.a.BankName,

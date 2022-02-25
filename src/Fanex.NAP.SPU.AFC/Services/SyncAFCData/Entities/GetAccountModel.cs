@@ -5,7 +5,7 @@
     public class GetAccountModel
     {
         //B2CustId
-        public string AccountID { get; set; }
+        public string B2CCustId { get; set; }
 
         public string CountryCode { get; set; }
 

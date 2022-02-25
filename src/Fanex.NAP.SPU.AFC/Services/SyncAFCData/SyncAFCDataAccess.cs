@@ -13,8 +13,6 @@
 
         DBResult DeleteAccounts(int? participantID, IEnumerable<string> b2cAccountIds);
 
-        IEnumerable<GetAccountModel> GetAccountInfo(string custIdJson);
-
         IEnumerable<GetB2CEntity> GetB2AccountIds(string custIds);
 
         IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
@@ -82,16 +80,6 @@
                 StatusCode = 1,
                 ErrorMessage = string.Empty
             };
-        }
-
-        public IEnumerable<GetAccountModel> GetAccountInfo(string custIdJson)
-        {
-            var criteria = new GetAccountInfoCriteria
-            {
-                B2CCustIdJson = custIdJson
-            };
-
-            return repository.Fetch<GetAccountModel>(criteria);
         }
 
         public IEnumerable<GetB2CEntity> GetB2AccountIds(string custIds)
