@@ -2,7 +2,6 @@
 {
     using Fanex.Data.Repository;
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
-    using Newtonsoft.Json;
     using System.Collections.Generic;
 
     public interface ITriggerSyncAFCDataAccess

@@ -174,6 +174,7 @@
 
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };
         }
+
         #region Private methods
 
         private IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<CustToSyncAFCEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)

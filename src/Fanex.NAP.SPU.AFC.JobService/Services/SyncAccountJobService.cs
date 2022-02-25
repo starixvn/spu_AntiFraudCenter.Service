@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.AFC.JobService.Services
 {
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.JobService;

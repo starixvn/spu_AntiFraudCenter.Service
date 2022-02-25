@@ -1,4 +1,5 @@
-﻿namespace Fanex.NAP.SPU.CTS.CC.JobService.Services
+﻿namespace Fanex.NAP.SPU.AFC.JobService.Services
+
 {
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.JobService;
@@ -14,7 +15,7 @@
 
     public interface ITriggerSyncAccountService
     {
-        Task<bool> InsertAccount(string json);
+        Task<bool> InsertAccount(IEnumerable<AccountViewModel> accounts);
     }
 
     public class TriggerSyncAccountService : ITriggerSyncAccountService
@@ -26,26 +27,25 @@
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
-        public TriggerSyncAccountService(
-            ISentryClient sentryClient,
-            ITriggerSyncAFCServices triggerSyncAFCServices,
-            ISyncAFCServices syncAFCServices,
-        IErrorHandleServices errorHandleServices,
-            IAppSettings appSettings)
+        public TriggerSyncAccountService(ISentryClient sentryClient,
+             ITriggerSyncAFCServices triggerSyncAFCServices,
+             ISyncAFCServices syncAFCServices,
+             IErrorHandleServices errorHandleServices,
+             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.triggerSyncAFCServices = triggerSyncAFCServices;
             this.syncAFCServices = syncAFCServices;
             this.errorHandleServices = errorHandleServices;
-            this.serviceName = "Service AntiFraudCenter";
+            this.serviceName = "Manual Insert AFCAccount";
             this.appSettings = appSettings;
         }
 
-        public Task<bool> InsertAccount(string json)
+        public Task<bool> InsertAccount(IEnumerable<AccountViewModel> accounts)
         {
             try
             {
-                Process(json);
+                Process(accounts);
             }
             catch (Exception ex)
             {
@@ -59,24 +59,19 @@
 
         #region Private Methods
 
-        private void Process(string json)
+        private void Process(IEnumerable<AccountViewModel> accounts)
         {
             try
             {
-                if (!string.IsNullOrEmpty(json))
+                if (accounts != null & accounts.Any())
                 {
-                   var accounts = JsonConvert.DeserializeObject<IEnumerable<AccountViewModel>>(json);
-
-                    if(accounts != null & accounts.Any())
-                    {
-                        InsertAccounts(accounts);
-                    }
+                    InsertAccounts(accounts);
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Manual Insert/Update AFC Accounts fail", json, ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, json);
+                Utilities.LogSentryError(serviceName, "Insert/Update AFC Accounts fail", JsonConvert.SerializeObject(accounts.Select(c => c.CustId)), ex, sentryClient);
+                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accounts.Select(c => c.CustId)));
             }
         }
 
@@ -90,7 +85,7 @@
 
                     foreach (var accounts in accountChunk)
                     {
-                        var fraudCases = triggerSyncAFCServices.GetFraudCases(accounts.Select(c=>c.CustId));
+                        var fraudCases = triggerSyncAFCServices.GetFraudCases(accounts.Select(c => c.CustId));
 
                         if (fraudCases != null && fraudCases.Any())
                         {
@@ -110,8 +105,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Insert/Update Accounts Manually Fail", custToSync, ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToSync));
+                Utilities.LogSentryError(serviceName, "Insert/Update Accounts Manually Fail", JsonConvert.SerializeObject(custToSync.Select(c => c.CustId)), ex, sentryClient);
+                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToSync.Select(c => c.CustId)));
             }
         }
     }

@@ -5,7 +5,7 @@
     using Fanex.NAP.Client.Services;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
     using Fanex.NAP.SPU.AFC.Services.SystemParameter;
-    using Fanex.NAP.SPU.CTS.CC.JobService.Services;
+    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +15,7 @@
         {
             RegisterNAPService(services);
             RegisterAFCService(services);
+            RegisterTriggerService(services);
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
@@ -37,6 +38,13 @@
 
             services.AddSingleton<ISystemParameterDataAccess, SystemParameterDataAccess>();
             services.AddSingleton<ISystemParameterServices, SystemParameterServices>();
+        }
+
+        private static void RegisterTriggerService(this IServiceCollection services)
+        {
+            services.AddSingleton<ITriggerSyncAFCDataAccess, TriggerSyncAFCDataAccess>();
+            services.AddSingleton<ITriggerSyncAFCServices, TriggerSyncAFCServices>();
+            services.AddSingleton<ITriggerSyncAccountService, TriggerSyncAccountService>();
         }
     }
 }

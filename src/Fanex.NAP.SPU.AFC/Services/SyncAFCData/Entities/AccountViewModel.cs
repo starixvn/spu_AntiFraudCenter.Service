@@ -1,8 +1,11 @@
 ﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 {
+    using Fanex.NAP.SPU.AFC.Shares;
+    using Fanex.NAP.SPU.AFC.Shares.ValidationData;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
 
     public class AccountViewModel
@@ -17,24 +20,32 @@
         public string CountryCode { get; set; }
 
         [JsonProperty(PropertyName = "Phone")]
+        [MaxLength(Consts.MaxLenght)]
+        [RequiredDependencyAttribute("CountryCode")]
+        [RequiredAtLeast("Email", "DocumentID", "BankAccountID")]
         public string Phone { get; set; }
 
         [JsonProperty(PropertyName = "Email")]
         public string Email { get; set; }
 
         [JsonProperty(PropertyName = "BankAccountID")]
+        [RequiredDependencyAttribute("BankName")]
         public string BankAccountID { get; set; }
 
         [JsonProperty(PropertyName = "BankName")]
+        [RequiredDependencyAttribute("BankAccountID")]
         public string BankName { get; set; }
 
         [JsonProperty(PropertyName = "FullName")]
         public string FullName { get; set; }
 
         [JsonProperty(PropertyName = "DocumentID")]
+        [MaxLength(Consts.MaxLenght)]
+        [RequiredDependencyAttribute("DocumentTypeID")]
         public string DocumentID { get; set; }
 
         [JsonProperty(PropertyName = "DocumentTypeID")]
+        [RequiredDependencyAttribute("DocumentID")]
         public string DocumentTypeID { get; set; }
 
         [JsonProperty(PropertyName = "FraudID")]

@@ -1,6 +1,4 @@
-﻿
-
-namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
+﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
 {
     using System;
     using System.Collections.Generic;

@@ -4,6 +4,8 @@
     {
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
 
+        public const int MaxLenght = 80;
+
         public enum Category
         {
             Newmember = 201,
