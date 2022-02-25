@@ -85,13 +85,13 @@ namespace Fanex.NAP.SPU.AFC.Shares
             }
         }
 
-        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient)
+        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string DataType ="Data")
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - Data {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {DataType} : {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
 
             sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
         }

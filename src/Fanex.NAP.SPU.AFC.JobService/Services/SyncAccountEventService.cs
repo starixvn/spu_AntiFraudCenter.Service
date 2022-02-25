@@ -10,6 +10,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.AFC.Shares.Consts;
 
     public interface ISyncAccountEventService
     {
@@ -88,7 +89,7 @@
 
                     foreach (var custs in custChunk)
                     {
-                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL);
+                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL, FlowName.CTSAPI);
 
                         if (accountInfo != null && accountInfo.Any())
                         {
@@ -96,15 +97,15 @@
 
                             var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
-                            syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId);
+                            syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FlowName.AFCSerivce);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Insert/Updte Accounts fail", custToCheck, ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToCheck));
+                Utilities.LogSentryError(serviceName, "Insert/Updte Accounts fail", custToCheck?.Select(c => c.CustID), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
             }
         }
 

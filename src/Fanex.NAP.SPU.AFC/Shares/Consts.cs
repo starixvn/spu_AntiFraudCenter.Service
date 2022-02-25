@@ -36,5 +36,14 @@
             ServerUnavailable = 503,
             InternalServerError = 500
         };
+
+        public enum FlowName
+        {
+            CTSWEB = 1,
+            CTSAPI = 2,
+            CTSServices = 3,
+            AFCSerivce = 4,
+            ManualTrigger = 5
+        };
     }
 }

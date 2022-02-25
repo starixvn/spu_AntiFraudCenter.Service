@@ -9,16 +9,17 @@
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.AFC.Shares.Consts;
 
     public interface ISyncAFCServices
     {
         IEnumerable<CustToSyncAFCEntity> GetCustChangedCategory();
 
-        IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url);
+        IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FlowName fromFlow);
 
         IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId);
 
-        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId);
+        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FlowName fromFlow);
 
         DBResult DeleteAccounts(IEnumerable<string> accounts, int? participantID);
 
@@ -33,7 +34,7 @@
         private readonly IB2CAccountServices b2CAccountServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Service AntiFraudCenter";
+        private const string ServiceName = "AntiFraudCenter";
 
         public SyncAFCServices(ISyncAFCDataAccess syncAFCDataAccess,
             IB2CAccountServices b2CAccountServices,
@@ -51,7 +52,7 @@
             return syncAFCDataAccess.GetCustChangedCategory();
         }
 
-        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url)
+        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FlowName fromFlow)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
@@ -59,7 +60,7 @@
 
                 if (b2cCustIds != null && b2cCustIds.Any())
                 {
-                    var account = b2CAccountServices.GetB2CAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), url);
+                    var account = b2CAccountServices.GetB2CAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), url, fromFlow);
 
                     return MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
                 }
@@ -117,7 +118,7 @@
         /// <summary>
         /// Update/Insert B2CAccount to AFC Database
         /// </summary>
-        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId)
+        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FlowName fromFlow)
         {
             if (accountInfo == null || !accountInfo.Any())
             {
@@ -131,36 +132,42 @@
             {
                 try
                 {
-                    var result = InsertAccounts(accToInsert, internalParticipantId);
-
-                    if (result.StatusCode == 0)
+                    if(accToInsert != null && accToInsert.Any())
                     {
-                        errorHandleServices.InsertErrorLog(internalParticipantId, result.ErrorMessage, JsonConvert.SerializeObject(accToInsert));
-                        Utilities.LogSentryError(ServiceName, $"AFC Service - Insert Accounts fail", accToInsert, new Exception(result.ErrorMessage), sentryClient);
-                    }
+                        var result = InsertAccounts(accToInsert, internalParticipantId);
+
+                        if (result.StatusCode == 0)
+                        {
+                            errorHandleServices.InsertErrorLog(internalParticipantId, $"{fromFlow} - {result.ErrorMessage}", JsonConvert.SerializeObject(accToInsert.Select(c => c.CustId)));
+                            Utilities.LogSentryError(ServiceName, $"{fromFlow} - Insert Accounts fail", accToInsert.Select(c => c.CustId), new Exception(result.ErrorMessage), sentryClient, "CustIds");
+                        }
+                    }    
                 }
                 catch (Exception ex)
                 {
-                    Utilities.LogSentryError(ServiceName, "AFC Service - Insert Accounts fail", accToInsert, ex, sentryClient);
-                    errorHandleServices.InsertErrorLog(internalParticipantId, ex.Message, JsonConvert.SerializeObject(accToInsert));
+                    errorHandleServices.InsertErrorLog(internalParticipantId, $"{fromFlow} - {ex.Message}", JsonConvert.SerializeObject(accToInsert?.Select(c => c.CustId)));
+                    Utilities.LogSentryError(ServiceName, $"{fromFlow} - Insert Accounts fail", accToInsert?.Select(c => c.CustId), ex, sentryClient, "CustIds");
                 }
             },
             () =>
             {
                 try
                 {
-                    var result = UpdateAccounts(accToUpdate, internalParticipantId);
-
-                    if (result.StatusCode == 0)
+                    if (accToUpdate != null && accToUpdate.Any())
                     {
-                        errorHandleServices.InsertErrorLog(internalParticipantId, result.ErrorMessage, JsonConvert.SerializeObject(accToUpdate));
-                        Utilities.LogSentryError(ServiceName, $"AFC Service - Update Accounts fail", accToUpdate, new Exception(result.ErrorMessage), sentryClient);
+                        var result = UpdateAccounts(accToUpdate, internalParticipantId);
+
+                        if (result.StatusCode == 0)
+                        {
+                            errorHandleServices.InsertErrorLog(internalParticipantId, $"{fromFlow} - {result.ErrorMessage}", JsonConvert.SerializeObject(accToUpdate.Select(c => c.CustId)));
+                            Utilities.LogSentryError(ServiceName, $"{fromFlow} - Update Accounts fail", accToUpdate.Select(c => c.CustId), new Exception(result.ErrorMessage), sentryClient, "CustIds");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Utilities.LogSentryError(ServiceName, "AFC Service - Update Accounts fail", accToUpdate, ex, sentryClient);
-                    errorHandleServices.InsertErrorLog(internalParticipantId, ex.Message, JsonConvert.SerializeObject(accToUpdate));
+                    errorHandleServices.InsertErrorLog(internalParticipantId, $"{fromFlow} - {ex.Message}", JsonConvert.SerializeObject(accToUpdate?.Select(c => c.CustId)));
+                    Utilities.LogSentryError(ServiceName, $"{fromFlow} - Update Accounts fail", accToUpdate?.Select(c => c.CustId), ex, sentryClient, "CustIds");
                 }
             });
         }

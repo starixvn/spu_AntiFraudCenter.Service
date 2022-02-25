@@ -12,6 +12,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using static Fanex.NAP.SPU.AFC.Shares.Consts;
 
     public interface ITriggerSyncAccountService
     {
@@ -70,8 +71,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Insert/Update AFC Accounts fail", JsonConvert.SerializeObject(accounts.Select(c => c.CustId)), ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(accounts.Select(c => c.CustId)));
+                Utilities.LogSentryError(serviceName, $" {FlowName.ManualTrigger} - Insert/Update AFC Accounts fail", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FlowName.ManualTrigger} - {ex.Message}", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)));
             }
         }
 
@@ -97,7 +98,7 @@
 
                                 var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
-                                syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId);
+                                syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FlowName.ManualTrigger);
                             }
                         }
                     }
@@ -105,8 +106,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Insert/Update Accounts Manually Fail", JsonConvert.SerializeObject(custToSync.Select(c => c.CustId)), ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToSync.Select(c => c.CustId)));
+                Utilities.LogSentryError(serviceName, $" {FlowName.ManualTrigger} - Insert/Update Accounts Manually Fail", JsonConvert.SerializeObject(custToSync?.Select(c => c.CustId)), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FlowName.ManualTrigger} - {ex.Message}", JsonConvert.SerializeObject(custToSync?.Select(c => c.CustId)));
             }
         }
     }

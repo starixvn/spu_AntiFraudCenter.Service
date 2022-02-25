@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.Shares;
     using Fanex.NAP.SPU.CTS.CC.Features.AntiFraudCenter.Model;
+    using global::SPU.AntiFraudCenter.Nova88.Services.Cryptographic;
     using Newtonsoft.Json;
     using Sentry;
     using System;
@@ -13,15 +14,14 @@
 
     public interface IB2CAccountServices
     {
-        Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url);
+        Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url, FlowName fromFlow);
     }
 
     public class B2CAccountServices : IB2CAccountServices
     {
-        private readonly ISyncAFCDataAccess syncAFCDataAccess;
         private readonly ISentryClient sentryClient;
         private readonly IErrorHandleServices errorHandleServices;
-        private const string ServiceName = "Service AntiFraudCenter";
+        private const string ServiceName = "AntiFraudCenter";
 
         public B2CAccountServices(IErrorHandleServices errorHandleServices, ISentryClient sentryClient)
         {
@@ -29,27 +29,33 @@
             this.sentryClient = sentryClient;
         }
 
-        public async Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url)
+        public async Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url, FlowName fromFlow)
         {
             try
             {
                 if (b2cCustIds != null && b2cCustIds.Any())
                 {
-                    var result = await ApiHelper.Post<B2CAccountResultModel>(url, b2cCustIds, 200);
+                    var data = new
+                    {
+                        Signture = CryptographicHelper.CreateMD5Hash(JsonConvert.SerializeObject(b2cCustIds) + CryptographicConfig.MD5Salt),
+                        B2CCustIds = b2cCustIds
+                    };
+
+                    var result = await ApiHelper.Post<B2CAccountResultModel>(url, data, 200);
 
                     if (result.StatusCode == HttpStatus.OK)
                     {
                         return result.B2CAccounts;
                     }
 
-                    Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Get B2CAccounts from AFC.Nova88.API  - Exception", b2cCustIds, new Exception(result.ErrorMessage), sentryClient);
-                    errorHandleServices.InsertErrorLog(null, result.ErrorMessage, JsonConvert.SerializeObject(b2cCustIds));
+                    Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", b2cCustIds, new Exception(result.ErrorMessage), sentryClient, "B2CCustIDs");
+                    errorHandleServices.InsertErrorLog(null, $"{fromFlow} - {result.ErrorMessage}", JsonConvert.SerializeObject(b2cCustIds));
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $"CTS.CC Service - Get B2CAccounts from AFC.Nova88.API  - Exception", b2cCustIds, ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(b2cCustIds));
+                Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", b2cCustIds, ex, sentryClient, "B2CCustIDs");
+                errorHandleServices.InsertErrorLog(null, $"{fromFlow} - {ex.Message}", JsonConvert.SerializeObject(b2cCustIds));
             }
 
             return Enumerable.Empty<GetAccountModel>();

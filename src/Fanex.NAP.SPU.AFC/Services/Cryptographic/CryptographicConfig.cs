@@ -10,6 +10,8 @@
 
         public const string InternalPassword = "Welcome1";    //*****REMOVEPASS*****
 
+        public const string MD5Salt = "!2!1@#!% KMRw+s=qw#";  
+
         public const int SecretKey_NumberOfByte = 16;
 
         public const int Aes128 = 128;
