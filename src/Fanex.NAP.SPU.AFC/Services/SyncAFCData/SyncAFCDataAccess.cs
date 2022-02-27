@@ -13,9 +13,9 @@
 
         DBResult DeleteAccounts(int? participantID, IEnumerable<string> b2cAccountIds);
 
-        IEnumerable<GetB2CEntity> GetB2AccountIds(string custIds);
+        IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
-        IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
+        IEnumerable<CheckAccountExistEntity> IsAccountValid(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
 
         IEnumerable<ParticipantEntity> GetParticipant();
 
@@ -82,7 +82,7 @@
             };
         }
 
-        public IEnumerable<GetB2CEntity> GetB2AccountIds(string custIds)
+        public IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds)
         {
             var criteria = new GetB2CustIdsCriteria
             {
@@ -99,7 +99,7 @@
             return repository.Fetch<CustToSyncAFCEntity>(criteria);
         }
 
-        public IEnumerable<CheckAccountExistEntity> CheckAccountValidation(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs)
+        public IEnumerable<CheckAccountExistEntity> IsAccountValid(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs)
         {
             var criteria = new AccountCheckExistCriteria
             {

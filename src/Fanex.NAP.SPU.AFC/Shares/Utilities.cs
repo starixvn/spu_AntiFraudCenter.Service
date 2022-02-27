@@ -85,7 +85,7 @@ namespace Fanex.NAP.SPU.AFC.Shares
             }
         }
 
-        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string DataType ="Data")
+        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string DataType = "Data")
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")

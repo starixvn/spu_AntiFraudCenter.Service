@@ -104,8 +104,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Insert/Update Accounts fail", custToCheck?.Select(c=>c.CustID), ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
+                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Insert/Update Accounts fail", custToCheck?.Select(c => c.CustID), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c => c.CustID)));
             }
         }
 
@@ -119,7 +119,7 @@
 
                     foreach (var custs in custChunk)
                     {
-                        var accounts = syncAFCServices.GetB2CAccountId(custs);
+                        var accounts = syncAFCServices.GetB2CCustIds(custs);
 
                         if (accounts != null && accounts.Any())
                         {
@@ -134,8 +134,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Delete Accounts fail", custToCheck?.Select(c=>c.CustID), ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
+                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Delete Accounts fail", custToCheck?.Select(c => c.CustID), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c => c.CustID)));
             }
         }
     }

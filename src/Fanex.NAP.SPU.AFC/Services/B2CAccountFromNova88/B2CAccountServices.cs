@@ -14,7 +14,7 @@
 
     public interface IB2CAccountServices
     {
-        Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow);
+        Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow);
     }
 
     public class B2CAccountServices : IB2CAccountServices
@@ -29,7 +29,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public async Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow)
+        public async Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow)
         {
             try
             {

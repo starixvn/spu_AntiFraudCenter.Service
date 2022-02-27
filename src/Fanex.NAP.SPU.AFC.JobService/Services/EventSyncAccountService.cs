@@ -23,7 +23,7 @@
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly ISyncAFCServices syncAFCServices;   
+        private readonly ISyncAFCServices syncAFCServices;
         private readonly ITriggerSyncAFCServices triggerSyncAFCServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
@@ -103,9 +103,7 @@
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.AFCSerivce);
                         }
-                    }    
-
-                  
+                    }
                 }
             }
         }
@@ -122,14 +120,14 @@
 
                     var custIdsToDelete = fraudCases.Where(c => c.FraudIDList == null || !c.FraudIDList.Any());
 
-                    var b2cCustIds = syncAFCServices.GetB2CAccountId(custIdsToDelete);
+                    var b2cCustIds = syncAFCServices.GetB2CCustIds(custIdsToDelete);
 
                     if (b2cCustIds != null && b2cCustIds.Any())
                     {
                         var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
                         var custToDelete = syncAFCServices.GetAccountToDelete(b2cCustIds.Select(c => c.B2CCustId), internalParticipantId);
-                        
+
                         syncAFCServices.DeleteAccounts(custToDelete, internalParticipantId);
                     }
                 }

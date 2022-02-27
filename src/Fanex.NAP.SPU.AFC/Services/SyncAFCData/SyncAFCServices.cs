@@ -5,7 +5,6 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -26,7 +25,7 @@
 
         int? GetInternalParticipant(string internalKey);
 
-        IEnumerable<GetB2CEntity> GetB2CAccountId(IEnumerable<CustToSyncAFCEntity> fraudCustIds);
+        IEnumerable<GetB2CEntity> GetB2CCustIds(IEnumerable<CustToSyncAFCEntity> fraudCustIds);
 
         IEnumerable<string> GetAccountToDelete(IEnumerable<string> b2cCustIds, int? participantIds);
     }
@@ -59,11 +58,11 @@
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
-                var b2cCustIds = GetB2CAccountId(fraudCustIds);
+                var b2cCustIds = GetB2CCustIds(fraudCustIds);
 
                 if (b2cCustIds != null && b2cCustIds.Any())
                 {
-                    var account = b2CAccountServices.GetB2CAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c=>c.CustID), url, fromFlow);
+                    var account = b2CAccountServices.GetAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c => c.CustID), url, fromFlow);
 
                     return MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
                 }
@@ -76,7 +75,7 @@
         {
             if (accInfo != null && accInfo.Any() && internalParticipantId != null)
             {
-                var result = syncAFCDataAccess.CheckAccountValidation(internalParticipantId, accInfo.Select(c => new CheckAccountExistEntity { AccountID = c }));
+                var result = syncAFCDataAccess.IsAccountValid(internalParticipantId, accInfo.Select(c => new CheckAccountExistEntity { AccountID = c }));
 
                 if (result != null && result.Any())
                 {
@@ -108,11 +107,11 @@
             return null;
         }
 
-        public IEnumerable<GetB2CEntity> GetB2CAccountId(IEnumerable<CustToSyncAFCEntity> fraudCustIds)
+        public IEnumerable<GetB2CEntity> GetB2CCustIds(IEnumerable<CustToSyncAFCEntity> fraudCustIds)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
-                return syncAFCDataAccess.GetB2AccountIds(string.Join(",", fraudCustIds.Select(c => c.CustID)?.Distinct())) ?? Enumerable.Empty<GetB2CEntity>();
+                return syncAFCDataAccess.GetB2CCustIds(string.Join(",", fraudCustIds.Select(c => c.CustID)?.Distinct())) ?? Enumerable.Empty<GetB2CEntity>();
             }
 
             return Enumerable.Empty<GetB2CEntity>();
@@ -135,7 +134,7 @@
             {
                 try
                 {
-                    if(accToInsert != null && accToInsert.Any())
+                    if (accToInsert != null && accToInsert.Any())
                     {
                         var result = InsertAccounts(accToInsert, internalParticipantId);
 
@@ -144,7 +143,7 @@
                             errorHandleServices.InsertErrorLog(internalParticipantId, $"{fromFlow} - {result.ErrorMessage}", JsonConvert.SerializeObject(accToInsert.Select(c => c.CustId)));
                             Utilities.LogSentryError(ServiceName, $"{fromFlow} - Insert Accounts fail", accToInsert.Select(c => c.CustId), new Exception(result.ErrorMessage), sentryClient, "CustIds");
                         }
-                    }    
+                    }
                 }
                 catch (Exception ex)
                 {
