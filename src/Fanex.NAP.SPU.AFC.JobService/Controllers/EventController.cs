@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.AFC.JobService.Controllers
 {
     using Fanex.NAP.SPU.AFC.JobService.Services;
+    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC.Model;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System;
@@ -22,15 +23,15 @@
         }
 
         [HttpPost("InsertAccount")]
-        public async Task<bool> InsertAccount([FromBody] IEnumerable<Int64> custIds, [FromBody] FromFlow flowName)
+        public async Task<bool> InsertAccount([FromBody] EventParameterModel paras)
         {
-            return await this.eventSyncAccountService.InsertProcess(custIds, flowName);
+            return await this.eventSyncAccountService.InsertProcess(paras);
         }
 
         [HttpPost("DeleteAccount")]
-        public async Task<bool> DeleteAccount([FromBody] IEnumerable<Int64> custIds, [FromBody] FromFlow flowName)
+        public async Task<bool> DeleteAccount([FromBody] EventParameterModel paras)
         {
-            return await this.eventSyncAccountService.DeleteProcess(custIds, flowName);
+            return await this.eventSyncAccountService.DeleteProcess(paras);
         }
     }
 }

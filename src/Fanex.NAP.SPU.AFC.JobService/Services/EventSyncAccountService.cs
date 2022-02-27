@@ -3,6 +3,7 @@
     using Fanex.NAP.SPU.AFC.JobService;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
     using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
+    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC.Model;
     using Fanex.NAP.SPU.AFC.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -14,9 +15,9 @@
 
     public interface IEventSyncAccountService
     {
-        Task<bool> InsertProcess(IEnumerable<Int64> custIds, FromFlow fromFlow);
+        Task<bool> InsertProcess(EventParameterModel paras);
 
-        Task<bool> DeleteProcess(IEnumerable<Int64> custIds, FromFlow fromFlow);
+        Task<bool> DeleteProcess(EventParameterModel paras);
     }
 
     public class EventSyncAccountService : IEventSyncAccountService
@@ -43,16 +44,16 @@
             this.appSettings = appSettings;
         }
 
-        public Task<bool> InsertProcess(IEnumerable<Int64> custIds, FromFlow fromFlow)
+        public Task<bool> InsertProcess(EventParameterModel paras)
         {
             try
             {
-                InsertAccounts(custIds, fromFlow);
+                InsertAccounts(paras.CustIds, paras.FromFlow);
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, $" {fromFlow} - Insert/Updte Accounts fail", custIds, ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
+                Utilities.LogSentryError(serviceName, $" {paras.FromFlow} - Insert/Updte Accounts fail", paras.CustIds, ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(paras.CustIds));
 
                 return Task.FromResult(false);
             }
@@ -60,16 +61,16 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteProcess(IEnumerable<Int64> custIds, FromFlow fromFlow)
+        public Task<bool> DeleteProcess(EventParameterModel paras)
         {
             try
             {
-                DeleteAccounts(custIds);
+                DeleteAccounts(paras.CustIds);
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, $" {fromFlow} - Delete Accounts fail", custIds, ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custIds));
+                Utilities.LogSentryError(serviceName, $" {paras.FromFlow} - Delete Accounts fail", paras.CustIds, ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(paras.CustIds));
 
                 return Task.FromResult(false);
             }
@@ -83,7 +84,7 @@
         {
             if (custIds != null && custIds.Any())
             {
-                var custChunk = custIds.Chunk(appSettings.BatchSize);
+                var custChunk = custIds.Distinct().Chunk(appSettings.BatchSize);
 
                 foreach (var custs in custChunk)
                 {
@@ -112,7 +113,7 @@
         {
             if (custIds != null && custIds.Any())
             {
-                var custChunk = custIds.Chunk(appSettings.BatchSize);
+                var custChunk = custIds.Distinct().Chunk(appSettings.BatchSize);
 
                 foreach (var custs in custChunk)
                 {
