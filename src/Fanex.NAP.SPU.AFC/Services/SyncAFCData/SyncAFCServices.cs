@@ -5,6 +5,7 @@
     using Newtonsoft.Json;
     using Sentry;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -15,17 +16,19 @@
     {
         IEnumerable<CustToSyncAFCEntity> GetCustChangedCategory();
 
-        IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FlowName fromFlow);
+        IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FromFlow fromFlow);
 
         IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId);
 
-        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FlowName fromFlow);
+        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow);
 
         DBResult DeleteAccounts(IEnumerable<string> accounts, int? participantID);
 
         int? GetInternalParticipant(string internalKey);
 
         IEnumerable<GetB2CEntity> GetB2CAccountId(IEnumerable<CustToSyncAFCEntity> fraudCustIds);
+
+        IEnumerable<string> GetAccountToDelete(IEnumerable<string> b2cCustIds, int? participantIds);
     }
 
     public class SyncAFCServices : ISyncAFCServices
@@ -52,7 +55,7 @@
             return syncAFCDataAccess.GetCustChangedCategory();
         }
 
-        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FlowName fromFlow)
+        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<CustToSyncAFCEntity> fraudCustIds, string url, FromFlow fromFlow)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
@@ -60,7 +63,7 @@
 
                 if (b2cCustIds != null && b2cCustIds.Any())
                 {
-                    var account = b2CAccountServices.GetB2CAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), url, fromFlow);
+                    var account = b2CAccountServices.GetB2CAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c=>c.CustID), url, fromFlow);
 
                     return MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
                 }
@@ -118,7 +121,7 @@
         /// <summary>
         /// Update/Insert B2CAccount to AFC Database
         /// </summary>
-        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FlowName fromFlow)
+        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow)
         {
             if (accountInfo == null || !accountInfo.Any())
             {
@@ -180,6 +183,18 @@
             }
 
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };
+        }
+
+        public IEnumerable<string> GetAccountToDelete(IEnumerable<string> b2cCustIds, int? participantIds)
+        {
+            if (b2cCustIds != null && b2cCustIds.Any())
+            {
+                var notExistedAccounts = GetAccountNotExist(b2cCustIds, participantIds);
+
+                return b2cCustIds.Except(notExistedAccounts);
+            }
+
+            return Enumerable.Empty<string>();
         }
 
         #region Private methods
@@ -258,16 +273,6 @@
             }
 
             return false;
-        }
-
-        private static bool IsLogError(string errorMessage)
-        {
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                return !errorMessage.Contains("Not Exist");
-            }
-
-            return true;
         }
 
         #endregion Private methods

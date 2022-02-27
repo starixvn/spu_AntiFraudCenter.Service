@@ -18,13 +18,10 @@
     public class TriggerSyncAFCServices : ITriggerSyncAFCServices
     {
         private readonly ITriggerSyncAFCDataAccess triggerSyncAFCDataAccess;
-        private readonly ISentryClient sentryClient;
-        private const string ServiceName = "Service AntiFraudCenter";
 
         public TriggerSyncAFCServices(ITriggerSyncAFCDataAccess triggerSyncAFCDataAccess, ISentryClient sentryClient)
         {
             this.triggerSyncAFCDataAccess = triggerSyncAFCDataAccess;
-            this.sentryClient = sentryClient;
         }
 
         public IEnumerable<CustToSyncAFCEntity> GetFraudCases(IEnumerable<Int64> custIds)

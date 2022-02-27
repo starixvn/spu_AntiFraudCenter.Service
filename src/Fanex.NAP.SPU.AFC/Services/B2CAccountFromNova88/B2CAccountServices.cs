@@ -14,7 +14,7 @@
 
     public interface IB2CAccountServices
     {
-        Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url, FlowName fromFlow);
+        Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow);
     }
 
     public class B2CAccountServices : IB2CAccountServices
@@ -29,7 +29,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public async Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, string url, FlowName fromFlow)
+        public async Task<IEnumerable<GetAccountModel>> GetB2CAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow)
         {
             try
             {
@@ -48,13 +48,13 @@
                         return result.B2CAccounts;
                     }
 
-                    Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", b2cCustIds, new Exception(result.ErrorMessage), sentryClient, "B2CCustIDs");
+                    Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", custIds, new Exception(result.ErrorMessage), sentryClient, "CustIDs");
                     errorHandleServices.InsertErrorLog(null, $"{fromFlow} - {result.ErrorMessage}", JsonConvert.SerializeObject(b2cCustIds));
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", b2cCustIds, ex, sentryClient, "B2CCustIDs");
+                Utilities.LogSentryError(ServiceName, $"{fromFlow} - Get B2CAccounts from AFC.Nova88.API Fail", custIds, ex, sentryClient, "CustIDs");
                 errorHandleServices.InsertErrorLog(null, $"{fromFlow} - {ex.Message}", JsonConvert.SerializeObject(b2cCustIds));
             }
 

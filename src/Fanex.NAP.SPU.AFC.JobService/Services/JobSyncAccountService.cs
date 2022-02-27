@@ -12,12 +12,12 @@
     using System.Threading.Tasks;
     using static Fanex.NAP.SPU.AFC.Shares.Consts;
 
-    public interface ISyncAccountEventService
+    public interface ISyncAccountJobService
     {
         Task<bool> Execute();
     }
 
-    public class SyncAccountEventService : ISyncAccountEventService
+    public class JobSyncAccountService : ISyncAccountJobService
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
@@ -25,7 +25,7 @@
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
-        public SyncAccountEventService(
+        public JobSyncAccountService(
             ISentryClient sentryClient,
             ISyncAFCServices syncAFCServices,
             IErrorHandleServices errorHandleServices,
@@ -34,7 +34,7 @@
             this.sentryClient = sentryClient;
             this.syncAFCServices = syncAFCServices;
             this.errorHandleServices = errorHandleServices;
-            this.serviceName = "Service AntiFraudCenter";
+            this.serviceName = "AntiFraudCenter Jobs";
             this.appSettings = appSettings;
         }
 
@@ -42,7 +42,7 @@
         {
             try
             {
-                Process();
+                JobRun();
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@
 
         #region Private Methods
 
-        private void Process()
+        private void JobRun()
         {
             var custToCheck = syncAFCServices.GetCustChangedCategory();
 
@@ -75,7 +75,7 @@
                     DeleteAccounts(accToDelete, appSettings.BatchSize);
                 });
 
-                Process();
+                JobRun();
             }
         }
 
@@ -89,7 +89,7 @@
 
                     foreach (var custs in custChunk)
                     {
-                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL, FlowName.CTSAPI);
+                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL, FromFlow.AFCSerivce);
 
                         if (accountInfo != null && accountInfo.Any())
                         {
@@ -97,15 +97,15 @@
 
                             var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
-                            syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FlowName.AFCSerivce);
+                            syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.AFCSerivce);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Insert/Updte Accounts fail", custToCheck?.Select(c => c.CustID), ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
+                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Insert/Update Accounts fail", custToCheck?.Select(c=>c.CustID), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
             }
         }
 
@@ -125,11 +125,7 @@
                         {
                             var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var b2cAccountIds = accounts.Select(c => c.B2CCustId);
-
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(b2cAccountIds, internalParticipantId);
-
-                            var custToDelete = b2cAccountIds.Except(notExistedAccounts);
+                            var custToDelete = syncAFCServices.GetAccountToDelete(accounts.Select(c => c.B2CCustId), internalParticipantId);
 
                             syncAFCServices.DeleteAccounts(custToDelete, internalParticipantId);
                         }
@@ -138,8 +134,8 @@
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, "Delete Accounts fail", custToCheck, ex, sentryClient);
-                errorHandleServices.InsertErrorLog(null, ex.Message, JsonConvert.SerializeObject(custToCheck));
+                Utilities.LogSentryError(serviceName, $" {FromFlow.AFCSerivce} - Delete Accounts fail", custToCheck?.Select(c=>c.CustID), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FromFlow.AFCSerivce} - {ex.Message}", JsonConvert.SerializeObject(custToCheck?.Select(c=>c.CustID)));
             }
         }
     }

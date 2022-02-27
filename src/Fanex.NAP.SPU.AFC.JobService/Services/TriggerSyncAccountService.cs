@@ -46,11 +46,15 @@
         {
             try
             {
-                Process(accounts);
+                if (accounts != null & accounts.Any())
+                {
+                    InsertAccounts(accounts);
+                }
             }
             catch (Exception ex)
             {
-                Utilities.LogSentryError(serviceName, ex.Message, string.Empty, ex, sentryClient);
+                Utilities.LogSentryError(serviceName, $" {FromFlow.ManualTrigger} - Insert/Update AFC Accounts fail", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)), ex, sentryClient, "CustIds");
+                errorHandleServices.InsertErrorLog(null, $" {FromFlow.ManualTrigger} - {ex.Message}", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)));
 
                 return Task.FromResult(false);
             }
@@ -60,54 +64,30 @@
 
         #region Private Methods
 
-        private void Process(IEnumerable<AccountViewModel> accounts)
-        {
-            try
-            {
-                if (accounts != null & accounts.Any())
-                {
-                    InsertAccounts(accounts);
-                }
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, $" {FlowName.ManualTrigger} - Insert/Update AFC Accounts fail", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)), ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, $" {FlowName.ManualTrigger} - {ex.Message}", JsonConvert.SerializeObject(accounts?.Select(c => c.CustId)));
-            }
-        }
-
         public void InsertAccounts(IEnumerable<AccountViewModel> custToSync)
         {
-            try
+            if (custToSync != null && custToSync.Any())
             {
-                if (custToSync != null && custToSync.Any())
+                var accountChunk = custToSync.Chunk(appSettings.BatchSize);
+
+                foreach (var accounts in accountChunk)
                 {
-                    var accountChunk = custToSync.Chunk(appSettings.BatchSize);
+                    var fraudCases = triggerSyncAFCServices.GetFraudCases(accounts.Select(c => c.CustId));
 
-                    foreach (var accounts in accountChunk)
+                    if (fraudCases != null && fraudCases.Any())
                     {
-                        var fraudCases = triggerSyncAFCServices.GetFraudCases(accounts.Select(c => c.CustId));
+                        var accountInfo = triggerSyncAFCServices.GetAccountInfo(accounts, fraudCases);
 
-                        if (fraudCases != null && fraudCases.Any())
+                        if (accountInfo != null && accountInfo.Any())
                         {
-                            var accountInfo = triggerSyncAFCServices.GetAccountInfo(accounts, fraudCases);
+                            var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            if (accountInfo != null && accountInfo.Any())
-                            {
-                                var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
-                                var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
-
-                                syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FlowName.ManualTrigger);
-                            }
+                            syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.ManualTrigger);
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Utilities.LogSentryError(serviceName, $" {FlowName.ManualTrigger} - Insert/Update Accounts Manually Fail", JsonConvert.SerializeObject(custToSync?.Select(c => c.CustId)), ex, sentryClient, "CustIds");
-                errorHandleServices.InsertErrorLog(null, $" {FlowName.ManualTrigger} - {ex.Message}", JsonConvert.SerializeObject(custToSync?.Select(c => c.CustId)));
             }
         }
     }

@@ -16,6 +16,7 @@
             RegisterNAPService(services);
             RegisterAFCService(services);
             RegisterTriggerService(services);
+            RegisterEventService(services);
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
@@ -29,7 +30,7 @@
         {
             services.AddSingleton<ISyncAFCDataAccess, SyncAFCDataAccess>();
             services.AddSingleton<ISyncAFCServices, SyncAFCServices>();
-            services.AddSingleton<ISyncAccountJobService, SyncAccountJobService>();
+            services.AddSingleton<ISyncAccountJobService, JobSyncAccountService>();
 
             services.AddSingleton<IB2CAccountServices, B2CAccountServices>();
 
@@ -45,6 +46,11 @@
             services.AddSingleton<ITriggerSyncAFCDataAccess, TriggerSyncAFCDataAccess>();
             services.AddSingleton<ITriggerSyncAFCServices, TriggerSyncAFCServices>();
             services.AddSingleton<ITriggerSyncAccountService, TriggerSyncAccountService>();
+        }
+
+        private static void RegisterEventService(this IServiceCollection services)
+        {
+            services.AddSingleton<IEventSyncAccountService, EventSyncAccountService>();
         }
     }
 }

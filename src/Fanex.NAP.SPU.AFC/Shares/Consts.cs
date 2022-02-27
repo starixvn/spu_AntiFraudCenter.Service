@@ -37,7 +37,7 @@
             InternalServerError = 500
         };
 
-        public enum FlowName
+        public enum FromFlow
         {
             CTSWEB = 1,
             CTSAPI = 2,
