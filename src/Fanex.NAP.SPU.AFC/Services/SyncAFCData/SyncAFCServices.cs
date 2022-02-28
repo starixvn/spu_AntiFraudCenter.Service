@@ -1,7 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.AFC.Services.SyncAFCData
 {
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
     using Fanex.NAP.SPU.AFC.Shares;
+    using global::SPU.AntiFraudCenter.Nova88.Services.Cryptographic;
     using Newtonsoft.Json;
     using Sentry;
     using System;
@@ -34,17 +36,20 @@
     {
         private readonly ISyncAFCDataAccess syncAFCDataAccess;
         private readonly IB2CAccountServices b2CAccountServices;
+        private readonly ITriggerSyncAFCServices triggerSyncAFCServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly ISentryClient sentryClient;
         private const string ServiceName = "AntiFraudCenter";
 
         public SyncAFCServices(ISyncAFCDataAccess syncAFCDataAccess,
             IB2CAccountServices b2CAccountServices,
+            ITriggerSyncAFCServices triggerSyncAFCServices,
             IErrorHandleServices errorHandleServices,
             ISentryClient sentryClient)
         {
             this.syncAFCDataAccess = syncAFCDataAccess;
             this.b2CAccountServices = b2CAccountServices;
+            this.triggerSyncAFCServices = triggerSyncAFCServices;
             this.errorHandleServices = errorHandleServices;
             this.sentryClient = sentryClient;
         }
@@ -64,7 +69,12 @@
                 {
                     var account = b2CAccountServices.GetAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c => c.CustID), url, fromFlow);
 
-                    return MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
+                    var accountInfo = MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
+
+                    if (accountInfo != null && accountInfo.Any())
+                    {
+                        return triggerSyncAFCServices.EncryptAccount(accountInfo.ToList());
+                    }
                 }
             }
 

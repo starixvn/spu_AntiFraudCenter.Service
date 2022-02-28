@@ -13,6 +13,8 @@
         IEnumerable<CustToSyncAFCEntity> GetFraudCases(IEnumerable<Int64> custIds);
 
         IEnumerable<AccountViewModel> GetAccountInfo(IEnumerable<AccountViewModel> accounts, IEnumerable<CustToSyncAFCEntity> fraudIDs);
+
+        IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> data);
     }
 
     public class TriggerSyncAFCServices : ITriggerSyncAFCServices
@@ -50,6 +52,24 @@
             return Enumerable.Empty<AccountViewModel>();
         }
 
+        public IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> data)
+        {
+            if (data != null && data.Any())
+            {
+                data.ToList().ForEach(c =>
+                {
+                    c.Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    c.Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    c.DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    c.BankAccountID = string.IsNullOrEmpty(c.BankAccountID) ? null : CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                });
+
+                return data;
+            }
+
+            return new List<AccountViewModel>();
+        }
+
         #region Private methods
 
         private IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<AccountViewModel> accounts, IEnumerable<CustToSyncAFCEntity> fraudIDs)
@@ -78,24 +98,6 @@
             }
 
             return Enumerable.Empty<AccountViewModel>();
-        }
-
-        private IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> data)
-        {
-            if (data != null && data.Any())
-            {
-                data.ToList().ForEach(c =>
-                {
-                    c.Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.BankAccountID = string.IsNullOrEmpty(c.BankAccountID) ? null : CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                });
-
-                return data;
-            }
-
-            return new List<AccountViewModel>();
         }
 
         #endregion Private methods
