@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.AFC.JobService.Services
 {
+    using Fanex.NAP.SPU.AFC.AccountHandlerServices;
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.JobService;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
@@ -22,17 +23,20 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly ISyncAFCServices syncAFCServices;
+        private readonly IAccountHandlerServices accountHandlerServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
         public JobSyncAccountService(
             ISentryClient sentryClient,
             ISyncAFCServices syncAFCServices,
+            IAccountHandlerServices accountHandlerServices,
             IErrorHandleServices errorHandleServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.syncAFCServices = syncAFCServices;
+            this.accountHandlerServices = accountHandlerServices;
             this.errorHandleServices = errorHandleServices;
             this.serviceName = "AntiFraudCenter Jobs";
             this.appSettings = appSettings;
@@ -58,7 +62,7 @@
 
         private void JobRun()
         {
-            var custToCheck = syncAFCServices.GetCustChangedCategory();
+            var custToCheck = syncAFCServices.ScanChangedCategoryToSyncAFC();
 
             if (custToCheck != null && custToCheck.Any())
             {
@@ -79,7 +83,7 @@
             }
         }
 
-        public void InsertAccounts(IEnumerable<CustToSyncAFCEntity> custToCheck, int batchSize)
+        public void InsertAccounts(IEnumerable<FraudCustomerEntity> custToCheck, int batchSize)
         {
             try
             {
@@ -93,9 +97,9 @@
 
                         if (accountInfo != null && accountInfo.Any())
                         {
-                            var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                            var internalParticipantId = accountHandlerServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
+                            var notExistedAccounts = accountHandlerServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.AFCSerivce);
                         }
@@ -109,7 +113,7 @@
             }
         }
 
-        public void DeleteAccounts(IEnumerable<CustToSyncAFCEntity> custToCheck, int batchSize)
+        public void DeleteAccounts(IEnumerable<FraudCustomerEntity> custToCheck, int batchSize)
         {
             try
             {
@@ -123,7 +127,7 @@
 
                         if (accounts != null && accounts.Any())
                         {
-                            var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                            var internalParticipantId = accountHandlerServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
                             var custToDelete = syncAFCServices.GetAccountToDelete(accounts.Select(c => c.B2CCustId), internalParticipantId);
 

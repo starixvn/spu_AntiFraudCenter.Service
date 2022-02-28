@@ -1,9 +1,8 @@
 ﻿namespace Fanex.NAP.SPU.AFC.JobService.Services
 {
+    using Fanex.NAP.SPU.AFC.AccountHandlerServices;
     using Fanex.NAP.SPU.AFC.JobService;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
-    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
-    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC.Model;
     using Fanex.NAP.SPU.AFC.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -15,9 +14,9 @@
 
     public interface IEventSyncAccountService
     {
-        Task<bool> InsertProcess(EventParameterModel paras);
+        Task<bool> InsertProcess(EventControllerParaModel paras);
 
-        Task<bool> DeleteProcess(EventParameterModel paras);
+        Task<bool> DeleteProcess(EventControllerParaModel paras);
     }
 
     public class EventSyncAccountService : IEventSyncAccountService
@@ -25,26 +24,26 @@
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
         private readonly ISyncAFCServices syncAFCServices;
-        private readonly ITriggerSyncAFCServices triggerSyncAFCServices;
+        private readonly IAccountHandlerServices accountHandlerServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
         public EventSyncAccountService(
             ISentryClient sentryClient,
             ISyncAFCServices syncAFCServices,
-            ITriggerSyncAFCServices triggerSyncAFCServices,
+            IAccountHandlerServices accountHandlerServices,
             IErrorHandleServices errorHandleServices,
             IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
             this.syncAFCServices = syncAFCServices;
-            this.triggerSyncAFCServices = triggerSyncAFCServices;
+            this.accountHandlerServices = accountHandlerServices;
             this.errorHandleServices = errorHandleServices;
             this.serviceName = "AntiFraudCenter Events";
             this.appSettings = appSettings;
         }
 
-        public Task<bool> InsertProcess(EventParameterModel paras)
+        public Task<bool> InsertProcess(EventControllerParaModel paras)
         {
             try
             {
@@ -61,7 +60,7 @@
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteProcess(EventParameterModel paras)
+        public Task<bool> DeleteProcess(EventControllerParaModel paras)
         {
             try
             {
@@ -88,7 +87,7 @@
 
                 foreach (var custs in custChunk)
                 {
-                    var fraudCases = triggerSyncAFCServices.GetFraudCases(custs);
+                    var fraudCases = accountHandlerServices.GetFraudCases(custs);
 
                     if (fraudCases != null && fraudCases.Any())
                     {
@@ -98,9 +97,9 @@
 
                         if (accountInfo != null && accountInfo.Any())
                         {
-                            var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                            var internalParticipantId = accountHandlerServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
+                            var notExistedAccounts = accountHandlerServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.AFCSerivce);
                         }
@@ -117,7 +116,7 @@
 
                 foreach (var custs in custChunk)
                 {
-                    var fraudCases = triggerSyncAFCServices.GetFraudCases(custs);
+                    var fraudCases = accountHandlerServices.GetFraudCases(custs);
 
                     var custIdsToDelete = fraudCases.Where(c => c.FraudIDList == null || !c.FraudIDList.Any());
 
@@ -125,7 +124,7 @@
 
                     if (b2cCustIds != null && b2cCustIds.Any())
                     {
-                        var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                        var internalParticipantId = accountHandlerServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
                         var custToDelete = syncAFCServices.GetAccountToDelete(b2cCustIds.Select(c => c.B2CCustId), internalParticipantId);
 

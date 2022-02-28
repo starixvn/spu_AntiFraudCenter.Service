@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\TriggerSyncAFC\Model\AccountViewModel.cs" />
+    <Compile Remove="Services\AccountHandlerServices\Model\AccountViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

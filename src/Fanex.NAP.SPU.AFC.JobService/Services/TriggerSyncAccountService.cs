@@ -1,10 +1,9 @@
 ﻿namespace Fanex.NAP.SPU.AFC.JobService.Services
-
 {
+    using Fanex.NAP.SPU.AFC.AccountHandlerServices;
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
     using Fanex.NAP.SPU.AFC.JobService;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
-    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
     using Fanex.NAP.SPU.AFC.Shares;
     using Newtonsoft.Json;
     using Sentry;
@@ -23,19 +22,19 @@
     {
         private readonly string serviceName;
         private readonly ISentryClient sentryClient;
-        private readonly ITriggerSyncAFCServices triggerSyncAFCServices;
+        private readonly IAccountHandlerServices accountHandlerServices;
         private readonly ISyncAFCServices syncAFCServices;
         private readonly IErrorHandleServices errorHandleServices;
         private readonly IAppSettings appSettings;
 
         public TriggerSyncAccountService(ISentryClient sentryClient,
-             ITriggerSyncAFCServices triggerSyncAFCServices,
+             IAccountHandlerServices accountHandlerServices,
              ISyncAFCServices syncAFCServices,
              IErrorHandleServices errorHandleServices,
              IAppSettings appSettings)
         {
             this.sentryClient = sentryClient;
-            this.triggerSyncAFCServices = triggerSyncAFCServices;
+            this.accountHandlerServices = accountHandlerServices;
             this.syncAFCServices = syncAFCServices;
             this.errorHandleServices = errorHandleServices;
             this.serviceName = "Manual Insert AFCAccount";
@@ -72,17 +71,17 @@
 
                 foreach (var accounts in accountChunk)
                 {
-                    var fraudCases = triggerSyncAFCServices.GetFraudCases(accounts.Select(c => c.CustId));
+                    var fraudCases = accountHandlerServices.GetFraudCases(accounts.Select(c => c.CustId));
 
                     if (fraudCases != null && fraudCases.Any())
                     {
-                        var accountInfo = triggerSyncAFCServices.GetAccountInfo(accounts, fraudCases);
+                        var accountInfo = accountHandlerServices.EncryptAccount(accounts, fraudCases);
 
                         if (accountInfo != null && accountInfo.Any())
                         {
-                            var internalParticipantId = syncAFCServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
+                            var internalParticipantId = accountHandlerServices.GetInternalParticipant(appSettings.AFCInternalParticipantKey);
 
-                            var notExistedAccounts = syncAFCServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
+                            var notExistedAccounts = accountHandlerServices.GetAccountNotExist(accountInfo.Select(c => c.B2CCustId), internalParticipantId);
 
                             syncAFCServices.SyncAccounts(accountInfo, notExistedAccounts, internalParticipantId, FromFlow.ManualTrigger);
                         }

@@ -15,11 +15,7 @@
 
         IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
-        IEnumerable<CheckAccountExistEntity> IsAccountValid(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs);
-
-        IEnumerable<ParticipantEntity> GetParticipant();
-
-        IEnumerable<CustToSyncAFCEntity> GetCustChangedCategory();
+        IEnumerable<FraudCustomerEntity> ScanChangedCategoryToSyncAFC();
     }
 
     public class SyncAFCDataAccess : ISyncAFCDataAccess
@@ -92,29 +88,11 @@
             return repository.Fetch<GetB2CEntity>(criteria);
         }
 
-        public IEnumerable<CustToSyncAFCEntity> GetCustChangedCategory()
+        public IEnumerable<FraudCustomerEntity> ScanChangedCategoryToSyncAFC()
         {
-            var criteria = new GetCustToSyncAFCCriteria();
+            var criteria = new ScanCCToSyncAFCCriteria();
 
-            return repository.Fetch<CustToSyncAFCEntity>(criteria);
-        }
-
-        public IEnumerable<CheckAccountExistEntity> IsAccountValid(int? participantID, IEnumerable<CheckAccountExistEntity> accountIDs)
-        {
-            var criteria = new AccountCheckExistCriteria
-            {
-                JsonAccountInfo = JsonConvert.SerializeObject(accountIDs),
-                ParticipantID = participantID
-            };
-
-            return repository.Fetch<CheckAccountExistEntity>(criteria);
-        }
-
-        public IEnumerable<ParticipantEntity> GetParticipant()
-        {
-            var criteria = new ParticipantGetCriteria();
-
-            return repository.Fetch<ParticipantEntity>(criteria);
+            return repository.Fetch<FraudCustomerEntity>(criteria);
         }
     }
 }

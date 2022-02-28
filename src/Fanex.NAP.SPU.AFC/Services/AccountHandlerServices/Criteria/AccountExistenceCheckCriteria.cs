@@ -1,9 +1,9 @@
-﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
+﻿namespace Fanex.NAP.SPU.AFC.AccountHandlerServices
 {
     using Fanex.Data;
     using Fanex.Data.Repository;
 
-    public class AccountCheckExistCriteria : CriteriaBase
+    public class AccountExistenceCheckCriteria : CriteriaBase
     {
         [SpParam(SqlParamName = "ip_ParticipantID")]
         public int? ParticipantID { get; set; }

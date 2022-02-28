@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData
+﻿namespace Fanex.NAP.SPU.AFC.AccountHandlerServices
 
 {
     public class ParticipantEntity

@@ -1,4 +1,4 @@
-﻿namespace Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC
+﻿namespace Fanex.NAP.SPU.AFC.AccountHandlerServices
 {
     using Fanex.Data;
     using Fanex.Data.Repository;

@@ -3,9 +3,9 @@
     using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
+    using Fanex.NAP.SPU.AFC.AccountHandlerServices;
     using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
     using Fanex.NAP.SPU.AFC.Services.SystemParameter;
-    using Fanex.NAP.SPU.AFC.Services.TriggerSyncAFC;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -43,8 +43,8 @@
 
         private static void RegisterTriggerService(this IServiceCollection services)
         {
-            services.AddSingleton<ITriggerSyncAFCDataAccess, TriggerSyncAFCDataAccess>();
-            services.AddSingleton<ITriggerSyncAFCServices, TriggerSyncAFCServices>();
+            services.AddSingleton<IAccountHandlerDataAccess, AccountHandlerDataAccess>();
+            services.AddSingleton<IAccountHandlerServices, AccountHandlerServices>();
             services.AddSingleton<ITriggerSyncAccountService, TriggerSyncAccountService>();
         }
 

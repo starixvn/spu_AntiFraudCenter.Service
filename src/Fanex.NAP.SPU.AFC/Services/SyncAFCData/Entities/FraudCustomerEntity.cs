@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class CustToSyncAFCEntity
+    public class FraudCustomerEntity
     {
         public Int64 CustID { get; set; }
 
