@@ -15,9 +15,9 @@
     {
         IEnumerable<FraudCustomerEntity> ScanChangedCategoryToSyncAFC();
 
-        IEnumerable<AccountViewModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow);
+        IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow);
 
-        void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow);
+        void SyncAccounts(IEnumerable<InsertAccountModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow);
 
         DBResult DeleteAccounts(IEnumerable<string> accounts, int? participantID);
 
@@ -53,7 +53,7 @@
             return syncAFCDataAccess.ScanChangedCategoryToSyncAFC();
         }
 
-        public IEnumerable<AccountViewModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow)
+        public IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
@@ -67,12 +67,12 @@
 
                     if (accountInfo != null && accountInfo.Any())
                     {
-                        return accountHandlerServices.EncryptAccount(accountInfo.ToList());
+                        return accountHandlerServices.EncryptAccount(accountInfo);
                     }
                 }
             }
 
-            return Enumerable.Empty<AccountViewModel>();
+            return Enumerable.Empty<InsertAccountModel>();
         }
 
         public IEnumerable<GetB2CEntity> GetB2CCustIds(IEnumerable<FraudCustomerEntity> fraudCustIds)
@@ -88,7 +88,7 @@
         /// <summary>
         /// Update/Insert B2CAccount to AFC Database
         /// </summary>
-        public void SyncAccounts(IEnumerable<AccountViewModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow)
+        public void SyncAccounts(IEnumerable<InsertAccountModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow)
         {
             if (accountInfo == null || !accountInfo.Any())
             {
@@ -166,7 +166,7 @@
 
         #region Private methods
 
-        private DBResult InsertAccounts(IEnumerable<AccountViewModel> accounts, int? participantID)
+        private DBResult InsertAccounts(IEnumerable<InsertAccountModel> accounts, int? participantID)
         {
             if (accounts != null && accounts.Any() && participantID != null)
             {
@@ -176,7 +176,7 @@
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };
         }
 
-        private DBResult UpdateAccounts(IEnumerable<AccountViewModel> accounts, int? participantID)
+        private DBResult UpdateAccounts(IEnumerable<InsertAccountModel> accounts, int? participantID)
         {
             if (accounts != null && accounts.Any() && participantID != null)
             {

@@ -8,7 +8,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
 
-    public class AccountViewModel
+    public class AccountParameterModel
     {
         [IgnoreDataMember]
         public Int64 CustId { get; set; }
@@ -21,7 +21,7 @@
 
         [JsonProperty(PropertyName = "Phone")]
         [MaxLength(Consts.MaxLenght)]
-        [RequiredDependencyAttribute("CountryCode")]
+        [RequiredDependency("CountryCode")]
         [RequiredAtLeast("Email", "DocumentID", "BankAccountID")]
         public string Phone { get; set; }
 
@@ -29,11 +29,11 @@
         public string Email { get; set; }
 
         [JsonProperty(PropertyName = "BankAccountID")]
-        [RequiredDependencyAttribute("BankName")]
+        [RequiredDependency("BankName")]
         public string BankAccountID { get; set; }
 
         [JsonProperty(PropertyName = "BankName")]
-        [RequiredDependencyAttribute("BankAccountID")]
+        [RequiredDependency("BankAccountID")]
         public string BankName { get; set; }
 
         [JsonProperty(PropertyName = "FullName")]
@@ -41,12 +41,12 @@
 
         [JsonProperty(PropertyName = "DocumentID")]
         [MaxLength(Consts.MaxLenght)]
-        [RequiredDependencyAttribute("DocumentTypeID")]
+        [RequiredDependency("DocumentTypeID")]
         public string DocumentID { get; set; }
 
         [JsonProperty(PropertyName = "DocumentTypeID")]
-        [RequiredDependencyAttribute("DocumentID")]
-        public string DocumentTypeID { get; set; }
+        [RequiredDependency("DocumentID")]
+        public int? DocumentTypeID { get; set; }
 
         [JsonProperty(PropertyName = "FraudID")]
         public IEnumerable<int> FraudID { get; set; }

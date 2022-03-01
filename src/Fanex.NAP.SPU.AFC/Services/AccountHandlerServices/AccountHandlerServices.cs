@@ -16,11 +16,11 @@
 
         IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId);
 
-        IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs);
+        IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs);
 
-        IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> data);
+        IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<InsertAccountModel> data);
 
-        IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs);
+        IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs);
     }
 
     public class AccountHandlerServices : IAccountHandlerServices
@@ -80,7 +80,7 @@
             return Enumerable.Empty<string>();
         }
 
-        public IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
+        public IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
         {
             if (accounts != null && accounts.Any() && fraudIDs != null && fraudIDs.Any())
             {
@@ -92,101 +92,136 @@
                 }
             }
 
-            return Enumerable.Empty<AccountViewModel>();
+            return Enumerable.Empty<InsertAccountModel>();
         }
 
-        public IEnumerable<AccountViewModel> EncryptAccount(IEnumerable<AccountViewModel> data)
+        public IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<InsertAccountModel> data)
         {
             if (data != null && data.Any())
             {
+                var result = new List<InsertAccountModel>();
+
                 data.ToList().ForEach(c =>
                 {
-                    c.Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
-                    c.BankAccountID = string.IsNullOrEmpty(c.BankAccountID) ? null : CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    result.Add(new InsertAccountModel
+                    {
+                        B2CCustId = c.B2CCustId,
+                        FullName = c.FullName,
+                        CountryCode = c.CountryCode,
+                        Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        DocumentTypeID = c.DocumentTypeID,
+                        BankAccount = EncryptBankAccount(c.BankAccount),
+                        FraudID = c.FraudID
+                    });
                 });
 
-                return data;
+                return result;
             }
 
-            return new List<AccountViewModel>();
+            return Enumerable.Empty<InsertAccountModel>();
         }
 
-        public IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
+        public IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
         {
             if (IsValid(accounts, fraudIDs, b2cCustIDs))
             {
-                var accInfo = accounts.GroupJoin(b2cCustIDs,
-                                   a => a.B2CCustId,
-                                   b => b.B2CCustId,
-                                   (a, b) => new { a, b })
-                               .SelectMany(
-                                    group => group.b.DefaultIfEmpty(),
-                                    (group, temp) => new AccountViewModel
-                                    {
-                                        CustId = temp.CustId,
-                                        B2CCustId = group.a.B2CCustId,
-                                        CountryCode = group.a.CountryCode,
-                                        Phone = group.a.Phone,
-                                        BankName = group.a.BankName,
-                                        BankAccountID = group.a.BankAccountID,
-                                        Email = group.a.Email,
-                                        FullName = group.a.FullName
-                                    })
-                                .GroupJoin(fraudIDs,
-                                    a => a.CustId,
-                                    f => f.CustID,
-                                    (a, f) => new { a, f })
-                                .SelectMany(
-                                   group => group.f.DefaultIfEmpty(),
-                                   (group, temp) => new AccountViewModel
-                                   {
-                                       CustId = group.a.CustId,
-                                       B2CCustId = group.a.B2CCustId,
-                                       CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
-                                       Phone = group.a.Phone,
-                                       BankName = group.a.BankName,
-                                       BankAccountID = group.a.BankAccountID,
-                                       Email = group.a.Email,
-                                       FullName = group.a.FullName,
-                                       FraudID = temp?.FraudIDList
-                                   });
+                var groupBankAccount = accounts.GroupBy(a => a.B2CCustId)
+                                        .Select(c => new InsertAccountModel
+                                        {
+                                            B2CCustId = c.Key,
+                                            CountryCode = c.Select(c=>c.CountryCode).FirstOrDefault(),
+                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault(),
+                                            DocumentTypeID = c.Select(c => c.DocumentTypeID).FirstOrDefault(),
+                                            Email = c.Select(c=>c.Email).FirstOrDefault(),
+                                            FullName = c.Select(c => c.FullName).FirstOrDefault(),
+                                            Phone = c.Select(c => c.Phone).FirstOrDefault(),
+                                            BankAccount = c.Select(c => new BankAccountModel { BankName = c.BankName, BankAccountID = c.BankAccountID }) 
+                                        });
 
-                return accInfo ?? Enumerable.Empty<AccountViewModel>();
+
+                var accountResult = groupBankAccount.GroupJoin(b2cCustIDs,
+                                           a => a.B2CCustId,
+                                           b => b.B2CCustId,
+                                           (a, b) => new { a, b })
+                                       .SelectMany(
+                                            group => group.b.DefaultIfEmpty(),
+                                            (group, temp) => new InsertAccountModel
+                                            {
+                                                CustId = temp.CustId,
+                                                B2CCustId = group.a.B2CCustId,
+                                                CountryCode = group.a.CountryCode,
+                                                Phone = group.a.Phone,
+                                                BankAccount = group.a.BankAccount,
+                                                Email = group.a.Email,
+                                                FullName = group.a.FullName
+                                            })
+                                        .GroupJoin(fraudIDs,
+                                            a => a.CustId,
+                                            f => f.CustID,
+                                            (a, f) => new { a, f })
+                                        .SelectMany(
+                                           group => group.f.DefaultIfEmpty(),
+                                           (group, temp) => new InsertAccountModel
+                                           {
+                                               CustId = group.a.CustId,
+                                               B2CCustId = group.a.B2CCustId,
+                                               CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
+                                               Phone = group.a.Phone,
+                                               BankAccount = group.a.BankAccount,
+                                               Email = group.a.Email,
+                                               FullName = group.a.FullName,
+                                               FraudID = temp?.FraudIDList
+                                           });
+
+                return accountResult ?? Enumerable.Empty<InsertAccountModel>();
             }
 
-            return Enumerable.Empty<AccountViewModel>();
+            return Enumerable.Empty<InsertAccountModel>();
         }
 
         #region Private methods
 
-        public IEnumerable<AccountViewModel> MappingFrauIDs(IEnumerable<AccountViewModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
+        public IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
         {
             if (accounts != null && accounts.Any() && fraudIDs != null && fraudIDs.Any())
             {
-                var accInfo = accounts.Join(fraudIDs?.Distinct(),
+                var groupBankAccount = accounts.GroupBy(a => a.B2CCustId)
+                                        .Select(c => new InsertAccountModel
+                                        {
+                                            B2CCustId = c.Key,
+                                            CustId = c.Select(c => c.CustId).FirstOrDefault(),
+                                            CountryCode = c.Select(c => c.CountryCode).FirstOrDefault(),
+                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault(),
+                                            DocumentTypeID = c.Select(c => c.DocumentTypeID).FirstOrDefault(),
+                                            Email = c.Select(c => c.Email).FirstOrDefault(),
+                                            FullName = c.Select(c => c.FullName).FirstOrDefault(),
+                                            Phone = c.Select(c => c.Phone).FirstOrDefault(),
+                                            BankAccount = c.Select(c => new BankAccountModel { BankName = c.BankName, BankAccountID = c.BankAccountID })
+                                        });
+
+                var accInfo = groupBankAccount.Join(fraudIDs?.Distinct(),
                                    a => a.CustId,
                                    b => b.CustID,
                                    (a, b) => new { a, b })
                                    .Where(c => c.b.FraudIDList != null && c.b.FraudIDList.Any())
-                                   .Select(c => new AccountViewModel
+                                   .Select(c => new InsertAccountModel
                                    {
                                        CustId = c.a.CustId,
                                        B2CCustId = c.a.B2CCustId,
                                        CountryCode = new RegionInfo(c.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
                                        Phone = c.a.Phone,
-                                       BankName = c.a.BankName,
-                                       BankAccountID = c.a.BankAccountID,
+                                       BankAccount = c.a.BankAccount,
                                        Email = c.a.Email,
                                        FullName = c.a.FullName,
                                        FraudID = c.b?.FraudIDList
                                    });
 
-                return accInfo ?? Enumerable.Empty<AccountViewModel>();
+                return accInfo ?? Enumerable.Empty<InsertAccountModel>();
             }
 
-            return Enumerable.Empty<AccountViewModel>();
+            return Enumerable.Empty<InsertAccountModel>();
         }
 
         private static bool IsValid(IEnumerable<GetAccountModel> accountInfo, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs)
@@ -197,6 +232,21 @@
             }
 
             return false;
+        }
+
+        private static IEnumerable<BankAccountModel> EncryptBankAccount(IEnumerable<BankAccountModel> bankAccount)
+        {
+            if (bankAccount != null && bankAccount.Any())
+            {
+                bankAccount.ToList().ForEach(c =>
+                {
+                    c.BankAccountID = CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                });
+
+                return bankAccount;
+            }
+
+            return Enumerable.Empty<BankAccountModel>();
         }
 
         #endregion Private methods

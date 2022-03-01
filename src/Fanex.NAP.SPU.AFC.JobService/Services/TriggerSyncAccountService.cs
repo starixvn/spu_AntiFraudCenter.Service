@@ -15,7 +15,7 @@
 
     public interface ITriggerSyncAccountService
     {
-        Task<bool> InsertAccount(IEnumerable<AccountViewModel> accounts);
+        Task<bool> InsertAccount(IEnumerable<AccountParameterModel> accounts);
     }
 
     public class TriggerSyncAccountService : ITriggerSyncAccountService
@@ -41,7 +41,7 @@
             this.appSettings = appSettings;
         }
 
-        public Task<bool> InsertAccount(IEnumerable<AccountViewModel> accounts)
+        public Task<bool> InsertAccount(IEnumerable<AccountParameterModel> accounts)
         {
             try
             {
@@ -63,7 +63,7 @@
 
         #region Private Methods
 
-        public void InsertAccounts(IEnumerable<AccountViewModel> custToSync)
+        public void InsertAccounts(IEnumerable<AccountParameterModel> custToSync)
         {
             if (custToSync != null && custToSync.Any())
             {

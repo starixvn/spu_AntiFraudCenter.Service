@@ -21,7 +21,7 @@
 
         public string DocumentID { get; set; }
 
-        public string DocumentTypeID { get; set; }
+        public int? DocumentTypeID { get; set; }
 
         public IEnumerable<int> FraudID { get; set; }
     }

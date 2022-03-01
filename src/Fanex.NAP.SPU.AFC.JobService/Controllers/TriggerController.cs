@@ -21,7 +21,7 @@
         }
 
         [HttpPost("ManualInsertAccount")]
-        public async Task<bool> InsertAccountByJson([FromBody] IEnumerable<AccountViewModel> accounts)
+        public async Task<bool> InsertAccountByJson([FromBody] IEnumerable<AccountParameterModel> accounts)
         {
             return await this.triggerSyncAccountService.InsertAccount(accounts);
         }
