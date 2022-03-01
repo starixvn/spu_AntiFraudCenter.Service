@@ -16,9 +16,7 @@
 
         IEnumerable<string> GetAccountNotExist(IEnumerable<string> accInfo, int? internalParticipantId);
 
-        IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs);
-
-        IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<InsertAccountModel> data);
+        IEnumerable<InsertAccountModel> ProcessAccountData(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs);
 
         IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<GetAccountModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs, IEnumerable<GetB2CEntity> b2cCustIDs);
     }
@@ -80,7 +78,7 @@
             return Enumerable.Empty<string>();
         }
 
-        public IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
+        public IEnumerable<InsertAccountModel> ProcessAccountData(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
         {
             if (accounts != null && accounts.Any() && fraudIDs != null && fraudIDs.Any())
             {
@@ -90,34 +88,6 @@
                 {
                     return EncryptAccount(accountInfo.ToList());
                 }
-            }
-
-            return Enumerable.Empty<InsertAccountModel>();
-        }
-
-        public IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<InsertAccountModel> data)
-        {
-            if (data != null && data.Any())
-            {
-                var result = new List<InsertAccountModel>();
-
-                data.ToList().ForEach(c =>
-                {
-                    result.Add(new InsertAccountModel
-                    {
-                        B2CCustId = c.B2CCustId,
-                        FullName = c.FullName,
-                        CountryCode = c.CountryCode,
-                        Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
-                        Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
-                        DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
-                        DocumentTypeID = c.DocumentTypeID,
-                        BankAccount = EncryptBankAccount(c.BankAccount),
-                        FraudID = c.FraudID
-                    });
-                });
-
-                return result;
             }
 
             return Enumerable.Empty<InsertAccountModel>();
@@ -183,7 +153,35 @@
 
         #region Private methods
 
-        public IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
+        private IEnumerable<InsertAccountModel> EncryptAccount(IEnumerable<InsertAccountModel> data)
+        {
+            if (data != null && data.Any())
+            {
+                var result = new List<InsertAccountModel>();
+
+                data.ToList().ForEach(c =>
+                {
+                    result.Add(new InsertAccountModel
+                    {
+                        B2CCustId = c.B2CCustId,
+                        FullName = c.FullName,
+                        CountryCode = c.CountryCode,
+                        Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        DocumentTypeID = c.DocumentTypeID,
+                        BankAccount = EncryptBankAccount(c.BankAccount?.ToList()),
+                        FraudID = c.FraudID
+                    });
+                });
+
+                return result;
+            }
+
+            return Enumerable.Empty<InsertAccountModel>();
+        }
+
+        private IEnumerable<InsertAccountModel> MappingFrauIDs(IEnumerable<AccountParameterModel> accounts, IEnumerable<FraudCustomerEntity> fraudIDs)
         {
             if (accounts != null && accounts.Any() && fraudIDs != null && fraudIDs.Any())
             {

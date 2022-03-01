@@ -63,12 +63,7 @@
                 {
                     var account = b2CAccountServices.GetAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c => c.CustID), url, fromFlow);
 
-                    var accountInfo = accountHandlerServices.MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
-
-                    if (accountInfo != null && accountInfo.Any())
-                    {
-                        return accountHandlerServices.EncryptAccount(accountInfo);
-                    }
+                    return accountHandlerServices.MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
                 }
             }
 

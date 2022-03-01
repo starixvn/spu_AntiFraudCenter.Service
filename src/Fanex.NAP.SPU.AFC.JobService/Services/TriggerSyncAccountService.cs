@@ -75,7 +75,7 @@
 
                     if (fraudCases != null && fraudCases.Any())
                     {
-                        var accountInfo = accountHandlerServices.EncryptAccount(accounts, fraudCases);
+                        var accountInfo = accountHandlerServices.ProcessAccountData(accounts, fraudCases);
 
                         if (accountInfo != null && accountInfo.Any())
                         {
