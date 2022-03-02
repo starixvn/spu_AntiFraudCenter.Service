@@ -67,7 +67,7 @@
         {
             if (custToSync != null && custToSync.Any())
             {
-                var accountChunk = custToSync.Chunk(appSettings.BatchSize);
+                var accountChunk = Utilities.ChunkSizeByGroup(custToSync.OrderBy(c=>c.CustId).ToList(), appSettings.BatchSize);
 
                 foreach (var accounts in accountChunk)
                 {

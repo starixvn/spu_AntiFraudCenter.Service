@@ -1,5 +1,6 @@
 ﻿using Fanex.Logging.Extensions;
 using Fanex.Logging.Extensions.Database;
+using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
 using Newtonsoft.Json;
 using Sentry;
 using System;
@@ -53,6 +54,36 @@ namespace Fanex.NAP.SPU.AFC.Shares
             }
 
             yield return q;
+        }
+
+        public static IEnumerable<IEnumerable<AccountParameterModel>> ChunkSizeByGroup(List<AccountParameterModel> accounts, int internalBatchSize)
+        {
+            var queue = new Queue<AccountParameterModel>();
+            var totalItem = accounts.Count;
+
+            for (int index = 0; index < totalItem; index++)
+            {
+                if (queue.Count >= internalBatchSize)
+                {
+                    var prevIndex = index - 1;
+
+                    if (accounts[index].CustId == accounts[prevIndex].CustId)
+                    {
+                        queue.Enqueue(accounts[index]);
+
+                        continue;
+                    }
+
+                    var ret = queue;
+                    queue = new Queue<AccountParameterModel>();
+
+                    yield return ret;
+                }
+
+                queue.Enqueue(accounts[index]);
+            }
+
+            yield return queue;
         }
 
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param)
