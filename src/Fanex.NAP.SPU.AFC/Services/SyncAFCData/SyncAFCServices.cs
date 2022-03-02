@@ -141,7 +141,9 @@
         {
             if (accounts != null && accounts.Any() && participantID != null)
             {
-                return syncAFCDataAccess.DeleteAccounts(participantID, accounts);
+                var accountToDelete = accounts.Select(c => new DeleteAccountModel { AccountID = c });
+
+                return syncAFCDataAccess.DeleteAccounts(participantID, accountToDelete);
             }
 
             return new DBResult() { StatusCode = 1, ErrorMessage = string.Empty };

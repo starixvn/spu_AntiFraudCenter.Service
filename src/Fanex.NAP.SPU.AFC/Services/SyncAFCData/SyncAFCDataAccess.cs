@@ -11,7 +11,7 @@
 
         DBResult UpdateAccounts(int? participantID, IEnumerable<InsertAccountModel> accounts);
 
-        DBResult DeleteAccounts(int? participantID, IEnumerable<string> b2cAccountIds);
+        DBResult DeleteAccounts(int? participantID, IEnumerable<DeleteAccountModel> b2cAccountIds);
 
         IEnumerable<GetB2CEntity> GetB2CCustIds(string custIds);
 
@@ -61,7 +61,7 @@
             };
         }
 
-        public DBResult DeleteAccounts(int? participantID, IEnumerable<string> accounts)
+        public DBResult DeleteAccounts(int? participantID, IEnumerable<DeleteAccountModel> accounts)
         {
             var criteria = new AccountDeleteCriteria()
             {
