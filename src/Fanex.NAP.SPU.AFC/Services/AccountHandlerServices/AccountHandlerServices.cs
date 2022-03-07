@@ -120,7 +120,7 @@
                                             group => group.b.DefaultIfEmpty(),
                                             (group, temp) => new InsertAccountModel
                                             {
-                                                CustId = temp.CustId,
+                                                CustId = temp != null ? temp.CustId : 0,
                                                 B2CCustId = group.a.B2CCustId,
                                                 CountryCode = group.a.CountryCode,
                                                 Phone = group.a.Phone,
