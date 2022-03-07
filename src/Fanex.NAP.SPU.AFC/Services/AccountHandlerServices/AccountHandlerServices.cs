@@ -1,6 +1,7 @@
 ﻿namespace Fanex.NAP.SPU.AFC.AccountHandlerServices
 {
     using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.Shares;
     using global::SPU.AntiFraudCenter.Nova88.Services.Cryptographic;
     using Sentry;
     using System;
@@ -168,7 +169,7 @@
                         CountryCode = c.CountryCode,
                         Email = string.IsNullOrEmpty(c.Email) ? null : CryptographicHelper.AESEncrypt(c.Email, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
                         Phone = string.IsNullOrEmpty(c.Phone) ? null : CryptographicHelper.AESEncrypt(c.Phone, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
-                        DocumentID = string.IsNullOrEmpty(c.DocumentID) ? null : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
+                        DocumentID = string.IsNullOrEmpty(c.DocumentID) ? Consts.Unknown : CryptographicHelper.AESEncrypt(c.DocumentID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey),
                         DocumentTypeID = c.DocumentTypeID,
                         BankAccount = EncryptBankAccount(c.BankAccount?.ToList()),
                         FraudID = c.FraudID
@@ -238,7 +239,8 @@
             {
                 bankAccount.ToList().ForEach(c =>
                 {
-                    c.BankAccountID = CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    c.BankAccountID = string.IsNullOrEmpty(c.BankAccountID) ? Consts.Unknown : CryptographicHelper.AESEncrypt(c.BankAccountID, CryptographicConfig.EncryptedKey, CryptographicConfig.IVKey);
+                    c.BankName = string.IsNullOrEmpty(c.BankName) ? Consts.Unknown : c.BankName;
                 });
 
                 return bankAccount;

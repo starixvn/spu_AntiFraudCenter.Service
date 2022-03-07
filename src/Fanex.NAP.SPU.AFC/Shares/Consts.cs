@@ -6,6 +6,8 @@
 
         public const int MaxLenght = 80;
 
+        public const string Unknown = "Unknown";
+
         public enum Category
         {
             Newmember = 201,

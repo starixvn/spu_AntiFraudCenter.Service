@@ -29,11 +29,9 @@
         public string Email { get; set; }
 
         [JsonProperty(PropertyName = "BankAccountID")]
-        [RequiredDependency("BankName")]
         public string BankAccountID { get; set; }
 
         [JsonProperty(PropertyName = "BankName")]
-        [RequiredDependency("BankAccountID")]
         public string BankName { get; set; }
 
         [JsonProperty(PropertyName = "FullName")]
@@ -41,11 +39,9 @@
 
         [JsonProperty(PropertyName = "DocumentID")]
         [MaxLength(Consts.MaxLenght)]
-        [RequiredDependency("DocumentTypeID")]
         public string DocumentID { get; set; }
 
         [JsonProperty(PropertyName = "DocumentTypeID")]
-        [RequiredDependency("DocumentID")]
         public int? DocumentTypeID { get; set; }
 
         [JsonProperty(PropertyName = "FraudID")]
