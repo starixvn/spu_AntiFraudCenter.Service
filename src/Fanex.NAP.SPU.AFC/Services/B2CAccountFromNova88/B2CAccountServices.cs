@@ -41,7 +41,7 @@
                         B2CCustIds = b2cCustIds
                     };
 
-                    var result = await ApiHelper.Post<B2CAccountResultModel>(url, data, 200);
+                    var result = await ApiHelper.PostWithProxy<B2CAccountResultModel>(url, data, 200);
 
                     if (result.StatusCode == HttpStatus.OK)
                     {

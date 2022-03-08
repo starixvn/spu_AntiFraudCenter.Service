@@ -54,11 +54,11 @@
             }
         }
 
-        public static async Task<TResult> PostWithProxy<TResult>(string url, object param)
+        public static async Task<TResult> PostWithProxy<TResult>(string url, object param, double timeOutbySeconds = 120)
         {
             var proxy = new WebProxy
             {
-                Address = new Uri($"http://10.3.252.100:8801")
+                Address = new Uri($"http://10.2.252.100:8801")
             };
 
             var httpClientHandler = new HttpClientHandler
@@ -75,6 +75,8 @@
                 var byteContent = new ByteArrayContent(buffer);
 
                 byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                web.Timeout = TimeSpan.FromSeconds(timeOutbySeconds);
 
                 var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
 
