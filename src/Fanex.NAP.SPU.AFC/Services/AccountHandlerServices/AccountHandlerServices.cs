@@ -103,7 +103,7 @@
                                         {
                                             B2CCustId = c.Key,
                                             CountryCode = c.Select(c=>c.CountryCode).FirstOrDefault(),
-                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault(),
+                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault() ?? Consts.Unknown,
                                             DocumentTypeID = c.Select(c => c.DocumentTypeID).FirstOrDefault(),
                                             Email = c.Select(c=>c.Email).FirstOrDefault(),
                                             FullName = c.Select(c => c.FullName).FirstOrDefault(),
@@ -138,7 +138,7 @@
                                            {
                                                CustId = group.a.CustId,
                                                B2CCustId = group.a.B2CCustId,
-                                               CountryCode = new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName ?? string.Empty,
+                                               CountryCode = string.IsNullOrEmpty(group.a.CountryCode) ? string.Empty : new RegionInfo(group.a.CountryCode)?.ThreeLetterISORegionName,
                                                Phone = group.a.Phone,
                                                BankAccount = group.a.BankAccount,
                                                Email = group.a.Email,
