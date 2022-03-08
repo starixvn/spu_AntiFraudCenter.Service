@@ -64,6 +64,7 @@
             var httpClientHandler = new HttpClientHandler
             {
                 Proxy = proxy,
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
             };
 
             using (var web = new HttpClient(handler: httpClientHandler, disposeHandler: true))
