@@ -14,7 +14,6 @@
         [Obsolete("Too many generic and parameter")]
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param, int environment, int mailingListId)
         {
-
             using (var web = new HttpClient())
             {
                 var response = await web.PostAsJsonAsync(url, param).ConfigureAwait(false);
@@ -26,10 +25,9 @@
 
                 return await response.Content.ReadFromJsonAsync<TResult>().ConfigureAwait(false);
             }
-
         }
 
-        public static async Task<TResult> Post<TResult>(string url, object param)
+        public static async Task<TResult> Post<TResult>(string url, object param, double timeOutbySeconds = 120)
         {
             using (var web = new HttpClient())
             {
@@ -40,6 +38,8 @@
                 var byteContent = new ByteArrayContent(buffer);
 
                 byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                web.Timeout = TimeSpan.FromSeconds(timeOutbySeconds);
 
                 var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
 
@@ -54,16 +54,17 @@
             }
         }
 
-        public static async Task<TResult> PostWithProxy<TResult>(string url, object param)
+        public static async Task<TResult> PostWithProxy<TResult>(string url, object param, double timeOutbySeconds = 120)
         {
             var proxy = new WebProxy
             {
-                Address = new Uri($"http://10.3.252.100:8801")
+                Address = new Uri($"http://10.2.252.100:8801")
             };
 
             var httpClientHandler = new HttpClientHandler
             {
                 Proxy = proxy,
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
             };
 
             using (var web = new HttpClient(handler: httpClientHandler, disposeHandler: true))
@@ -75,6 +76,8 @@
                 var byteContent = new ByteArrayContent(buffer);
 
                 byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                web.Timeout = TimeSpan.FromSeconds(timeOutbySeconds);
 
                 var response = await web.PostAsync(url, byteContent).ConfigureAwait(false);
 

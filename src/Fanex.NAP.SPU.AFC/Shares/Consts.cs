@@ -4,6 +4,10 @@
     {
         public const string CONVERT_TO_SQL_DATETIME = "yyyy-MM-dd HH:mm:ss";
 
+        public const int MaxLenght = 80;
+
+        public const string Unknown = "Unknown";
+
         public enum Category
         {
             Newmember = 201,
@@ -21,6 +25,27 @@
             ProblemAccountLastScannedTime = 2,
             RobotAccountLastScannedTime = 3,
             MatchMonitorLastScannedTrans = 20
+        };
+
+        public enum HttpStatus
+        {
+            Unauthorized = 401,
+            BadRequest = 400,
+            NotFound = 404,
+            MethodNotAllowed = 405,
+            OK = 200,
+            Created = 201,
+            ServerUnavailable = 503,
+            InternalServerError = 500
+        };
+
+        public enum FromFlow
+        {
+            CTSWEB = 1,
+            CTSAPI = 2,
+            CTSServices = 3,
+            AFCSerivce = 4,
+            ManualTrigger = 5
         };
     }
 }

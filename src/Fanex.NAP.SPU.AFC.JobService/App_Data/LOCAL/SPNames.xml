@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <Functions>
-	<Function Name="JobSerice">
+	<Function name="AntiFraudCase">
+		<Setting Key="AFC_Get_B2CCustId" SpName="AFC_Get_B2CCustId_xtest" DbName="DBAGE.bodb02.bodbAdminNet" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" SpName="CTS_DC_CustClassification_ProblemAccount_GetB2CByBatch" DbName="MySQL.CTS_DataCenter.ctsServiceAdmin" />
+		<Setting Key="AFC_DC_Participant_Get" SpName="AFC_DC_Participant_Get" DbName="MySQL.AFC_DataCenter.afcService" />
+		<Setting Key="AFC_DC_Account_CheckExist" SpName="AFC_DC_Account_CheckExist" DbName="MySQL.AFC_DataCenter.afcService" />
+		<Setting Key="AFC_DC_ErrorLog_Insert" SpName="AFC_DC_ErrorLog_Insert" DbName="MySQL.AFC_DataCenter.afcServiceAdmin" />
+		<Setting Key="AFC_DC_Account_Insert" SpName="AFC_DC_Account_Insert" DbName="MySQL.AFC_DataCenter.afcServiceAdmin" />
+		<Setting Key="AFC_DC_Account_Update" SpName="AFC_DC_Account_Update" DbName="MySQL.AFC_DataCenter.afcServiceAdmin" />
+		<Setting Key="AFC_DC_Account_Delete" SpName="AFC_DC_Account_Delete" DbName="MySQL.AFC_DataCenter.afcServiceAdmin" />
+		<Setting Key="CTS_DC_CustClassification_ProblemAccount_FilterByB2C" SpName="CTS_DC_CustClassification_ProblemAccount_FilterByB2C" DbName="MySQL.CTS_DataCenter.ctsService" />
 	</Function>
 </Functions>

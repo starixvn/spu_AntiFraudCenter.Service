@@ -1,5 +1,6 @@
 ﻿namespace Fanex.NAP.SPU.AFC.JobService.Controllers
 {
+    using Fanex.NAP.SPU.AFC.JobService.Services;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using System.Threading.Tasks;
@@ -9,16 +10,18 @@
     public class JobController : ControllerBase
     {
         private readonly ISentryClient sentryClient;
+        private readonly ISyncAccountJobService syncAFCJobService;
 
-        public JobController(ISentryClient sentryClient)
+        public JobController(ISentryClient sentryClient, ISyncAccountJobService syncAFCJobService)
         {
             this.sentryClient = sentryClient;
+            this.syncAFCJobService = syncAFCJobService;
         }
 
-        [HttpPost("test")]
-        public async Task<bool> test([FromForm] int size)
+        [HttpPost("SyncB2CAccount")]
+        public async Task<bool> SyncAFCData()
         {
-            return true;
+            return await this.syncAFCJobService.Execute();
         }
     }
 }

@@ -13,6 +13,18 @@
         string SPName { get; }
 
         string SentryDsn { get; }
+
+        string AFCInsertAccountsURL { get; }
+
+        string AFCUpdateAccountsURL { get; }
+
+        string AFCDeleteAccountsURL { get; }
+
+        string AFCGetAccountURL { get; }
+
+        string AFCInternalParticipantKey { get; }
+
+        int BatchSize { get; }
     }
 
     public class AppSettings : IAppSettings
@@ -23,6 +35,12 @@
         private readonly string evironmentName;
         private readonly string spName;
         private readonly string sentryDsn;
+        private readonly string afcInsertAccountsAPI;
+        private readonly string afcUpdateAccountsAPI;
+        private readonly string afcDeleteAccountsAPI;
+        private readonly string afcGetAccountURL;
+        private readonly string afcInternalKey;
+        private readonly int batchSize;
 
         public AppSettings(IConfiguration configuration)
         {
@@ -32,6 +50,12 @@
             evironmentName = GetValue<string>(nameof(Environment));
             spName = GetValue<string>(nameof(SPName));
             sentryDsn = GetValue<string>("Sentry:Dsn");
+            afcInsertAccountsAPI = GetValue<string>(nameof(AFCInsertAccountsURL));
+            afcUpdateAccountsAPI = GetValue<string>(nameof(AFCUpdateAccountsURL));
+            afcDeleteAccountsAPI = GetValue<string>(nameof(AFCDeleteAccountsURL));
+            afcGetAccountURL = GetValue<string>(nameof(AFCGetAccountURL));
+            afcInternalKey = GetValue<string>(nameof(AFCInternalParticipantKey));
+            batchSize = GetValue<int>(nameof(BatchSize));
         }
 
         #region Variables
@@ -59,6 +83,18 @@
         public string SPName => spName;
 
         public string SentryDsn => sentryDsn;
+
+        public string AFCInsertAccountsURL => afcInsertAccountsAPI;
+
+        public string AFCUpdateAccountsURL => afcUpdateAccountsAPI;
+
+        public string AFCDeleteAccountsURL => afcDeleteAccountsAPI;
+
+        public string AFCGetAccountURL => afcGetAccountURL;
+
+        public string AFCInternalParticipantKey => afcInternalKey;
+
+        public int BatchSize => batchSize;
 
         #endregion Variables
 

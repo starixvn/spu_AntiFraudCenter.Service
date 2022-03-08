@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\AccountHandlerServices\Model\AccountViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AdditionalFiles Include="..\..\.sonarlint\fanex.nap.spu.dcs\CSharp\SonarLint.xml" Link="SonarLint.xml" />
   </ItemGroup>
 
@@ -23,6 +27,10 @@
     <PackageReference Include="Sentry.AspNetCore" Version="2.1.8" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="UAParser" Version="3.1.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Cryptographic\" />
   </ItemGroup>
 
 </Project>

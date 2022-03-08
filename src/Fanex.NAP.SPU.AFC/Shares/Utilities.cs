@@ -1,10 +1,10 @@
 ﻿using Fanex.Logging.Extensions;
 using Fanex.Logging.Extensions.Database;
+using Fanex.NAP.SPU.AFC.CC.Features.SyncAFCData;
 using Newtonsoft.Json;
 using Sentry;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -56,6 +56,36 @@ namespace Fanex.NAP.SPU.AFC.Shares
             yield return q;
         }
 
+        public static IEnumerable<IEnumerable<AccountParameterModel>> ChunkSizeByGroup(List<AccountParameterModel> accounts, int internalBatchSize)
+        {
+            var queue = new Queue<AccountParameterModel>();
+            var totalItem = accounts.Count;
+
+            for (int index = 0; index < totalItem; index++)
+            {
+                if (queue.Count >= internalBatchSize)
+                {
+                    var prevIndex = index - 1;
+
+                    if (accounts[index].CustId == accounts[prevIndex].CustId)
+                    {
+                        queue.Enqueue(accounts[index]);
+
+                        continue;
+                    }
+
+                    var ret = queue;
+                    queue = new Queue<AccountParameterModel>();
+
+                    yield return ret;
+                }
+
+                queue.Enqueue(accounts[index]);
+            }
+
+            yield return queue;
+        }
+
         public static async Task<TResult> Post<TParam, TResult>(string url, TParam param)
         {
             using (var web = new HttpClient { Timeout = new TimeSpan(0, 5, 0) })
@@ -86,13 +116,13 @@ namespace Fanex.NAP.SPU.AFC.Shares
             }
         }
 
-        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient)
+        public static void LogSentryError<T>(string serviceName, string message, T data, Exception ex, ISentryClient sentryClient, string DataType = "Data")
         {
             var logMessage = new LogMessage(ex.Message)
                 .AddMessage($"{serviceName}")
                 .AddSection("Data Info", DatabaseInfoGetters.GetDbExceptionInfo(ex))
                 .AddSection("Exception Info", CommonInfoGetters.GetExceptionInfo(ex))
-                .AddMessage($"{message} - Data {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
+                .AddMessage($"{message} - {DataType} : {JsonConvert.SerializeObject(data)} - { DateTime.Now}").ToString();
 
             sentryClient.CaptureMessage(logMessage, Sentry.Protocol.SentryLevel.Error);
         }

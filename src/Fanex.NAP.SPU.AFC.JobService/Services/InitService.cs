@@ -3,6 +3,9 @@
     using Fanex.NAP.Client.AspNetCore.Session;
     using Fanex.NAP.Client.Helpers.Web;
     using Fanex.NAP.Client.Services;
+    using Fanex.NAP.SPU.AFC.AccountHandlerServices;
+    using Fanex.NAP.SPU.AFC.Services.SyncAFCData;
+    using Fanex.NAP.SPU.AFC.Services.SystemParameter;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +14,9 @@
         public static void RegisterService(this IServiceCollection services)
         {
             RegisterNAPService(services);
+            RegisterAFCService(services);
+            RegisterTriggerService(services);
+            RegisterEventService(services);
         }
 
         private static void RegisterNAPService(this IServiceCollection services)
@@ -18,6 +24,33 @@
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<INapSession, NapSession>();
             services.AddSingleton<ISecurityService, SecurityService>();
+        }
+
+        private static void RegisterAFCService(this IServiceCollection services)
+        {
+            services.AddSingleton<ISyncAFCDataAccess, SyncAFCDataAccess>();
+            services.AddSingleton<ISyncAFCServices, SyncAFCServices>();
+            services.AddSingleton<ISyncAccountJobService, JobSyncAccountService>();
+
+            services.AddSingleton<IB2CAccountServices, B2CAccountServices>();
+
+            services.AddSingleton<IErrorHandleDataAccess, ErrorHandleDataAccess>();
+            services.AddSingleton<IErrorHandleServices, ErrorHandleServices>();
+
+            services.AddSingleton<ISystemParameterDataAccess, SystemParameterDataAccess>();
+            services.AddSingleton<ISystemParameterServices, SystemParameterServices>();
+        }
+
+        private static void RegisterTriggerService(this IServiceCollection services)
+        {
+            services.AddSingleton<IAccountHandlerDataAccess, AccountHandlerDataAccess>();
+            services.AddSingleton<IAccountHandlerServices, AccountHandlerServices>();
+            services.AddSingleton<ITriggerSyncAccountService, TriggerSyncAccountService>();
+        }
+
+        private static void RegisterEventService(this IServiceCollection services)
+        {
+            services.AddSingleton<IEventSyncAccountService, EventSyncAccountService>();
         }
     }
 }
