@@ -103,7 +103,7 @@
                                         {
                                             B2CCustId = c.Key,
                                             CountryCode = c.Select(c=>c.CountryCode).FirstOrDefault(),
-                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault() ?? Consts.Unknown,
+                                            DocumentID = c.Select(c => c.DocumentID).FirstOrDefault(),
                                             DocumentTypeID = c.Select(c => c.DocumentTypeID).FirstOrDefault(),
                                             Email = c.Select(c=>c.Email).FirstOrDefault(),
                                             FullName = c.Select(c => c.FullName).FirstOrDefault(),
