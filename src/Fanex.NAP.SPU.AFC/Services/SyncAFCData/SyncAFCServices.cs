@@ -15,7 +15,7 @@
     {
         IEnumerable<FraudCustomerEntity> ScanChangedCategoryToSyncAFC();
 
-        IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow);
+        IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow, int environment);
 
         void SyncAccounts(IEnumerable<InsertAccountModel> accountInfo, IEnumerable<string> notExistedAccount, int? internalParticipantId, FromFlow fromFlow);
 
@@ -53,7 +53,7 @@
             return syncAFCDataAccess.ScanChangedCategoryToSyncAFC();
         }
 
-        public IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow)
+        public IEnumerable<InsertAccountModel> GetAccount(IEnumerable<FraudCustomerEntity> fraudCustIds, string url, FromFlow fromFlow, int environment)
         {
             if (fraudCustIds != null && fraudCustIds.Any())
             {
@@ -61,7 +61,7 @@
 
                 if (b2cCustIds != null && b2cCustIds.Any())
                 {
-                    var account = b2CAccountServices.GetAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c => c.CustID), url, fromFlow);
+                    var account = b2CAccountServices.GetAccountFromNova88(b2cCustIds.Select(c => c.B2CCustId), fraudCustIds.Select(c => c.CustID), url, fromFlow, environment);
 
                     return accountHandlerServices.MappingFrauIDs(account.Result, fraudCustIds, b2cCustIds);
                 }

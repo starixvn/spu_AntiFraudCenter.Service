@@ -93,7 +93,7 @@
 
                     foreach (var custs in custChunk)
                     {
-                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL, FromFlow.AFCSerivce);
+                        var accountInfo = syncAFCServices.GetAccount(custs, appSettings.AFCGetAccountURL, FromFlow.AFCSerivce, appSettings.Environment);
 
                         if (accountInfo != null && accountInfo.Any())
                         {

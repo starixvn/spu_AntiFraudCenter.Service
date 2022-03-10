@@ -14,7 +14,7 @@
 
     public interface IB2CAccountServices
     {
-        Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow);
+        Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow, int environment);
     }
 
     public class B2CAccountServices : IB2CAccountServices
@@ -29,7 +29,7 @@
             this.sentryClient = sentryClient;
         }
 
-        public async Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow)
+        public async Task<IEnumerable<GetAccountModel>> GetAccountFromNova88(IEnumerable<string> b2cCustIds, IEnumerable<Int64> custIds, string url, FromFlow fromFlow, int environment)
         {
             try
             {
@@ -41,7 +41,7 @@
                         B2CCustIds = b2cCustIds
                     };
 
-                    var result = await ApiHelper.PostWithProxy<B2CAccountResultModel>(url, data, 200);
+                    var result = await ((environment == 1) ? ApiHelper.Post<B2CAccountResultModel>(url, data) : ApiHelper.PostWithProxy<B2CAccountResultModel>(url, data, 200));
 
                     if (result.StatusCode == HttpStatus.OK)
                     {
