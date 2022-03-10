@@ -108,7 +108,7 @@
                                             Email = c.Select(c=>c.Email).FirstOrDefault(),
                                             FullName = c.Select(c => c.FullName).FirstOrDefault(),
                                             Phone = c.Select(c => c.Phone).FirstOrDefault(),
-                                            BankAccount = c.Select(c => new BankAccountModel { BankName = c.BankName, BankAccountID = c.BankAccountID }) 
+                                            BankAccount = c?.Where(c=>c.BankName != null && c.BankAccountID != null)?.Select(c => new BankAccountModel { BankName = c.BankName, BankAccountID = c.BankAccountID }) 
                                         });
 
 

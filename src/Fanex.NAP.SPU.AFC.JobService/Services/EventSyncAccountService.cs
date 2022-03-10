@@ -93,7 +93,7 @@
                     {
                         var custIdsToInsert = fraudCases.Where(c => c.FraudIDList != null && c.FraudIDList.Any());
 
-                        var accountInfo = syncAFCServices.GetAccount(custIdsToInsert, appSettings.AFCGetAccountURL, fromFlow);
+                        var accountInfo = syncAFCServices.GetAccount(custIdsToInsert, appSettings.AFCGetAccountURL, fromFlow, appSettings.Environment);
 
                         if (accountInfo != null && accountInfo.Any())
                         {
