@@ -19,16 +19,16 @@
             this.eventSyncAccountService = eventSyncAccountService;
         }
 
-        [HttpPost("InsertAccount")]
-        public async Task<bool> InsertAccount([FromBody] EventControllerParaModel paras)
-        {
-            return await this.eventSyncAccountService.InsertProcess(paras);
-        }
+        //[HttpPost("InsertAccount")]
+        //public async Task<bool> InsertAccount([FromBody] EventControllerParaModel paras)
+        //{
+        //    return await this.eventSyncAccountService.InsertProcess(paras);
+        //}
 
-        [HttpPost("DeleteAccount")]
-        public async Task<bool> DeleteAccount([FromBody] EventControllerParaModel paras)
-        {
-            return await this.eventSyncAccountService.DeleteProcess(paras);
-        }
+        //[HttpPost("DeleteAccount")]
+        //public async Task<bool> DeleteAccount([FromBody] EventControllerParaModel paras)
+        //{
+        //    return await this.eventSyncAccountService.DeleteProcess(paras);
+        //}
     }
 }

@@ -22,11 +22,11 @@
             this.triggerSyncAccountService = triggerSyncAccountService;
         }
 
-        [HttpPost("ManualInsertAccount")]
-        public async Task<bool> InsertAccountByJson([FromBody] IEnumerable<AccountParameterModel> accounts)
-        {
-            return await this.triggerSyncAccountService.InsertAccount(accounts);
-        }
+        //[HttpPost("ManualInsertAccount")]
+        //public async Task<bool> InsertAccountByJson([FromBody] IEnumerable<AccountParameterModel> accounts)
+        //{
+        //    return await this.triggerSyncAccountService.InsertAccount(accounts);
+        //}
 
         [HttpGet("health")]
         public string CheckHealth()

@@ -18,10 +18,10 @@
             this.syncAFCJobService = syncAFCJobService;
         }
 
-        [HttpPost("SyncB2CAccount")]
-        public async Task<bool> SyncAFCData()
-        {
-            return await this.syncAFCJobService.Execute();
-        }
+        //[HttpPost("SyncB2CAccount")]
+        //public async Task<bool> SyncAFCData()
+        //{
+        //    return await this.syncAFCJobService.Execute();
+        //}
     }
 }
